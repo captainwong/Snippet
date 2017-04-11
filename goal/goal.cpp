@@ -1,8 +1,49 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <chrono>
+
+namespace {
+class timer {
+	std::chrono::steady_clock::time_point begin_ = {};
+	std::chrono::steady_clock::time_point end_ = {};
+public:
+
+	timer() {
+		begin_ = std::chrono::steady_clock::now();
+	}
+
+	void stop() {
+		end_ = std::chrono::steady_clock::now();
+		auto diff = end_ - begin_;
+		auto milli = std::chrono::duration_cast<std::chrono::milliseconds>(diff).count() % 1000;
+		auto micro = std::chrono::duration_cast<std::chrono::microseconds>(diff).count() % 10000000;
+		std::cout << "Time: " << milli << "." << micro << "ms" << std::endl;
+	}
+
+	void average(size_t count) {
+		auto diff = end_ - begin_;
+		auto milli = std::chrono::duration_cast<std::chrono::milliseconds>(diff).count() % 1000;
+		auto micro = std::chrono::duration_cast<std::chrono::microseconds>(diff).count() % 10000000;
+		std::cout << "Average Time: " << milli / count << "." << micro / count << "ms" << std::endl;
+	}
+
+};
+
+class auto_timer {
+	timer t_ = {};
+
+public:
+
+	auto_timer() {}
+
+	~auto_timer() { t_.stop(); }
+};
+
+}
 
 namespace my_solution {
+// this is wrong, class g itself should not print the result.
 class g {
 
 	std::string pre_ = "go";
@@ -10,14 +51,14 @@ class g {
 public:
 
 	g(std::string s) {
-		std::cout << "g" << s.c_str() << std::endl;
+		std::cout << "g" << s << std::endl;
 	}
 
 	g() {}
 
 	g& operator()(std::string str) {
 		pre_ += str;
-		std::cout << pre_.c_str() << std::endl;
+		std::cout << pre_ << std::endl;
 
 		return *this;
 	}
@@ -32,12 +73,15 @@ public:
 void test_goal()
 {
 	std::cout << "my solution:" << std::endl;
+	auto_timer t;
 	g("al");
 	g()("al");
 	g()()("al");
 }
 
 };
+
+
 
 
 namespace Russell_Harmon_solution {
@@ -65,6 +109,7 @@ struct repeater
 void test_goal()
 {
 	std::cout << "Russell Harmon solution:" << std::endl;
+	auto_timer t;
 	auto g = repeater<>("g");
 	std::cout << g("al") << std::endl;
 	std::cout << g()("al") << std::endl;
@@ -75,11 +120,74 @@ void test_goal()
 }
 
 
+namespace my_solution_2 {
+
+class goal {
+
+	std::string pre_ = "g";
+
+public:
+
+	goal() {}
+
+	std::string operator()(std::string str) {
+		auto res = pre_ + str;
+		pre_ = "g";
+		return res;
+	}
+
+	goal& operator()() {
+		pre_ += "o";
+		return *this;
+	}
+};
+
+
+void test_goal()
+{
+	std::cout << "my solution2:" << std::endl;
+	auto_timer t;
+	goal g;
+	std::cout << g("al") << std::endl;
+	std::cout << g()("al") << std::endl;
+	std::cout << g()()("al") << std::endl;
+}
+
+
+};
+
+
+
 int main() 
 {
-	my_solution::test_goal();
+	const size_t TEST_TIMES = 10;
 
-	Russell_Harmon_solution::test_goal();
+	{
+		timer t;
+		for (size_t i = 0; i < TEST_TIMES; i++) {
+			my_solution::test_goal();
+		}
+		t.stop();
+		t.average(TEST_TIMES);
+	}
+
+	{
+		timer t;
+		for (size_t i = 0; i < TEST_TIMES; i++) {
+			Russell_Harmon_solution::test_goal();
+		}
+		t.stop();
+		t.average(TEST_TIMES);
+	}
+
+	{
+		timer t;
+		for (size_t i = 0; i < TEST_TIMES; i++) {
+			my_solution_2::test_goal();
+		}
+		t.stop();
+		t.average(TEST_TIMES);
+	}
 
 
 	//f _f = [](const std::string& str) {
