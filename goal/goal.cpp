@@ -1,3 +1,19 @@
+// inspiration https://github.com/eatnumber1/goal/blob/master/README.md
+//
+// Rules
+//
+// 1. You are encouraged to break the rules, cleverly.
+// 2. When executed, the solution must print "goal" with sufficient o's to demonstrate the program's functionality.
+// 3. The code g()('al') must appear in the source.
+// 4. g()('al') must not be a string literal.
+// 5. 'al' must be a string, or your language's equivalent thereof. You may use your language's standard method of creating a string(e.x.C should use ", ruby may use either " or ').
+// 6. g()('al') must be a valid rvalue if applicable in your language.
+// 7. g()('al') may not print the string.If returning a string cannot be done in your language, you should submit rationale as to why this is impossible for a solution which prints a string to be accepted.
+// 8. You must be able to insert an arbitrary number of() calls without modification to your solution.Therefore solutions like this are incorrect.
+// 9. g('al') must return "gal".
+//
+//
+
 #include <iostream>
 #include <string>
 #include <cstdlib>
@@ -84,7 +100,8 @@ void test_goal()
 
 
 
-namespace Russell_Harmon_solution {
+namespace derrickturk_solution {
+// https://github.com/eatnumber1/goal/blob/master/solved/c%2B%2B/derrickturk/goal.cpp
 
 template<unsigned N = 0>
 struct repeater
@@ -108,7 +125,7 @@ struct repeater
 
 void test_goal()
 {
-	std::cout << "Russell Harmon solution:" << std::endl;
+	std::cout << "derrickturk solution:" << std::endl;
 	auto_timer t;
 	auto g = repeater<>("g");
 	std::cout << g("al") << std::endl;
@@ -174,7 +191,7 @@ int main()
 	{
 		timer t;
 		for (size_t i = 0; i < TEST_TIMES; i++) {
-			Russell_Harmon_solution::test_goal();
+			derrickturk_solution::test_goal();
 		}
 		t.stop();
 		t.average(TEST_TIMES);
