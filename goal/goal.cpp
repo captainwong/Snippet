@@ -17,46 +17,11 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
-#include <chrono>
+#include "../timer/timer.h"
 
-namespace {
-class timer {
-	std::chrono::steady_clock::time_point begin_ = {};
-	std::chrono::steady_clock::time_point end_ = {};
-public:
+using namespace jlib;
 
-	timer() {
-		begin_ = std::chrono::steady_clock::now();
-	}
 
-	void stop() {
-		end_ = std::chrono::steady_clock::now();
-		auto diff = end_ - begin_;
-		auto milli = std::chrono::duration_cast<std::chrono::milliseconds>(diff).count() % 1000;
-		auto micro = std::chrono::duration_cast<std::chrono::microseconds>(diff).count() % 10000000;
-		std::cout << "Time: " << milli << "." << micro << "ms" << std::endl;
-	}
-
-	void average(size_t count) {
-		auto diff = end_ - begin_;
-		auto milli = std::chrono::duration_cast<std::chrono::milliseconds>(diff).count() % 1000;
-		auto micro = std::chrono::duration_cast<std::chrono::microseconds>(diff).count() % 10000000;
-		std::cout << "Average Time: " << milli / count << "." << micro / count << "ms" << std::endl;
-	}
-
-};
-
-class auto_timer {
-	timer t_ = {};
-
-public:
-
-	auto_timer() {}
-
-	~auto_timer() { t_.stop(); }
-};
-
-}
 
 namespace my_solution {
 // this is wrong, class g itself should not print the result.

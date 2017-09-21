@@ -1,0 +1,3 @@
+[2017-04-11 20:38:59.382] [tid 53152] [INFO] got a task, range is [5, 10005)
+[2017-04-11 20:38:59.383] [tid 49240] [INFO] got a task, range is [10005, 20005)
+[2017-04-11 20:38:59.393] [tid 7968] [INFO] second 70005 is bigger than 65535, break
