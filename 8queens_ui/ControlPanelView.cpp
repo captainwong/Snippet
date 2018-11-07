@@ -5,7 +5,7 @@ ControlPanelView::ControlPanelView(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	resize(100, 450);
+	setFixedSize(100, 450);
 }
 
 ControlPanelView::~ControlPanelView()

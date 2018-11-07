@@ -8,7 +8,7 @@ ChessBoardView::ChessBoardView(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	resize(450, 450);
+	setFixedSize(450, 450);
 
 }
 

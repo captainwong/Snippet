@@ -2,8 +2,8 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_queens_ui.h"
-#include "ChessBoardView.h"
-#include "ControlPanelView.h"
+#include "View.h"
+
 
 class queens_ui : public QMainWindow
 {
@@ -16,6 +16,5 @@ public:
 
 private:
 	Ui::queens_uiClass ui;
-	ChessBoardView* chess_board_ = {};
-	ControlPanelView* control_panel_ = {};
+	View* view_ = {};
 };
