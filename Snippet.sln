@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "8queens_ui", "8queens_ui\8q
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "eval", "eval\eval.vcxproj", "{5EC2A544-443B-419F-9223-D4BE2281A250}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_move_semantic", "test_move_semantic\test_move_semantic.vcxproj", "{3BCB8C2D-2C97-44A1-980E-ADAF64FCA6B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -79,8 +81,19 @@ Global
 		{5EC2A544-443B-419F-9223-D4BE2281A250}.Release|x64.Build.0 = Release|x64
 		{5EC2A544-443B-419F-9223-D4BE2281A250}.Release|x86.ActiveCfg = Release|Win32
 		{5EC2A544-443B-419F-9223-D4BE2281A250}.Release|x86.Build.0 = Release|Win32
+		{3BCB8C2D-2C97-44A1-980E-ADAF64FCA6B8}.Debug|x64.ActiveCfg = Debug|x64
+		{3BCB8C2D-2C97-44A1-980E-ADAF64FCA6B8}.Debug|x64.Build.0 = Debug|x64
+		{3BCB8C2D-2C97-44A1-980E-ADAF64FCA6B8}.Debug|x86.ActiveCfg = Debug|Win32
+		{3BCB8C2D-2C97-44A1-980E-ADAF64FCA6B8}.Debug|x86.Build.0 = Debug|Win32
+		{3BCB8C2D-2C97-44A1-980E-ADAF64FCA6B8}.Release|x64.ActiveCfg = Release|x64
+		{3BCB8C2D-2C97-44A1-980E-ADAF64FCA6B8}.Release|x64.Build.0 = Release|x64
+		{3BCB8C2D-2C97-44A1-980E-ADAF64FCA6B8}.Release|x86.ActiveCfg = Release|Win32
+		{3BCB8C2D-2C97-44A1-980E-ADAF64FCA6B8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CA44247E-5E0F-4AD3-8F78-0EA7936A3F51}
 	EndGlobalSection
 EndGlobal
