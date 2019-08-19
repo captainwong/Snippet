@@ -1,5 +1,8 @@
 // inspiration https://en.wikipedia.org/wiki/Perfect_number
-#include "C:/dev/Global/log2.h"
+
+#define WIN32
+#define _CRT_SECURE_NO_WARNINGS
+#include "g:/dev_libs/jlib/jlib/log2.h"
 
 #include <iostream>
 #include <cstdint>
@@ -45,7 +48,7 @@ void test(data_type val) {
 int main()
 {
 	{
-		jlib::init_logger();
+		jlib::init_logger(L"perfect_number");
 	}
 
 	mutex mtx;

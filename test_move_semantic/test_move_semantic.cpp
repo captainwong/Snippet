@@ -4,11 +4,15 @@
 #include "pch.h"
 #include <iostream>
 #include <vector>
-
+#include <string>
 
 typedef std::vector<int> vint;
 
-void output(const vint& v) {
+void output_v(const vint& v, const std::string& tag = "") {
+	if (!tag.empty()) {
+		std::cout << tag << std::endl;
+	}
+
 	for (auto m : v) {
 		std::cout << m << " ";
 	}
@@ -29,6 +33,7 @@ public:
 	}
 
 	void output() {
+		std::cout << "test.m_" << std::endl;
 		for (auto m : m_) {
 			std::cout << m << " ";
 		}
@@ -36,17 +41,58 @@ public:
 	}
 };
 
-int main()
+void test_class() 
 {
 	test t;
-
 	t.output();
-
 	auto r = t.get();
-
-	output(r);
-
+	output_v(r, "test_class: r");
 	t.output();
+}
+
+vint&& init_1()
+{
+	return std::move(vint{ 1,2,3,4,5,6 });
+}
+
+vint&& init_2()
+{
+	return vint{ 1, 2, 3, 4, 5 };
+}
+
+vint init3()
+{
+	return vint{ 1, 2, 3, 4, 5 };
+}
+
+vint test_direct_return()
+{
+	return init3();
+}
+
+vint&& test_return_local()
+{
+	auto v = init3();
+	return std::move(v);
+}
+
+void test_func()
+{
+	auto v1 = init3();
+	output_v(v1, "test_func:v1");
+	
+	auto v2 = test_direct_return();
+	output_v(v2, "test_func:v2");
+
+	auto v3 = test_return_local();
+	output_v(v3, "test_func:v3");
+
+}
+
+int main()
+{
+	test_class();
+	test_func();
 
 	system("pause");
 }

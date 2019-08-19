@@ -3,9 +3,14 @@
 #include <iostream>
 #include <deque>
 #include <sstream>
-#include "C:/dev/Global/log2.h"
+
+#define WIN32
+#include "G:/dev_libs/jlib/jlib/log2.h"
 
 using namespace jlib;
+
+//#undef JLOG_INFO
+//#define JLOG_INFO(...)
 
 bool chessboard[8][8] = { false };
 
@@ -125,7 +130,7 @@ bool search(std::deque<position>& queen_poses, int queens, int row, int col)
 int main()
 {
 	{
-		jlib::init_logger("8queens");
+		jlib::init_logger(L"8queens");
 	}
 
 	int total = 0;

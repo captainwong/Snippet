@@ -47,6 +47,7 @@ bool evaluate(std::string expression, double& result)
 		}
 	}
 
+	return false;
 }
 
 
