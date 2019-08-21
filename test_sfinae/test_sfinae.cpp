@@ -122,6 +122,8 @@ void test() {
 
 // Is it possible to write a template to check for a function's existence?
 // https://stackoverflow.com/questions/257288/is-it-possible-to-write-a-template-to-check-for-a-functions-existence/264088#264088
+// due to https://stackoverflow.com/questions/1966362/sfinae-to-check-for-inherited-member-functions
+// won't work for inherited member functions.
 namespace determin_member_function_exists
 {
 
@@ -136,14 +138,11 @@ struct Generic {};
 template <typename T>
 class has_helloworld
 {
-	typedef char yes;
-	typedef int no;
-
-	template <typename C> static yes test(decltype(&C::helloworld));
-	template <typename C> static no test(...);
+	template <typename C> static char test(decltype(&C::helloworld));
+	template <typename C> static int test(...);
 
 public:
-	static const bool value = sizeof(test<T>(nullptr)) == sizeof(yes);
+	static const bool value = sizeof(test<T>(nullptr)) == sizeof(char);
 };
 
 void test()
@@ -152,6 +151,7 @@ void test()
 	std::cout << std::boolalpha;
 	std::cout << has_helloworld<Hello>::value << std::endl;
 	std::cout << has_helloworld<Generic>::value << std::endl;
+	std::cout << has_helloworld<bool>::value << std::endl;
 }
 
 }
