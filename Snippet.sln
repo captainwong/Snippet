@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cpp", "cpp", "{7F21A16F-E93
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_list_splice", "test_list_splice\test_list_splice.vcxproj", "{1D363458-9B30-4613-8627-5459D465D376}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_sfinae", "test_sfinae\test_sfinae.vcxproj", "{44129261-07DD-4CF2-B1AB-DD40CCD7B8D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -101,6 +103,14 @@ Global
 		{1D363458-9B30-4613-8627-5459D465D376}.Release|x64.Build.0 = Release|x64
 		{1D363458-9B30-4613-8627-5459D465D376}.Release|x86.ActiveCfg = Release|Win32
 		{1D363458-9B30-4613-8627-5459D465D376}.Release|x86.Build.0 = Release|Win32
+		{44129261-07DD-4CF2-B1AB-DD40CCD7B8D8}.Debug|x64.ActiveCfg = Debug|x64
+		{44129261-07DD-4CF2-B1AB-DD40CCD7B8D8}.Debug|x64.Build.0 = Debug|x64
+		{44129261-07DD-4CF2-B1AB-DD40CCD7B8D8}.Debug|x86.ActiveCfg = Debug|Win32
+		{44129261-07DD-4CF2-B1AB-DD40CCD7B8D8}.Debug|x86.Build.0 = Debug|Win32
+		{44129261-07DD-4CF2-B1AB-DD40CCD7B8D8}.Release|x64.ActiveCfg = Release|x64
+		{44129261-07DD-4CF2-B1AB-DD40CCD7B8D8}.Release|x64.Build.0 = Release|x64
+		{44129261-07DD-4CF2-B1AB-DD40CCD7B8D8}.Release|x86.ActiveCfg = Release|Win32
+		{44129261-07DD-4CF2-B1AB-DD40CCD7B8D8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -108,6 +118,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{3BCB8C2D-2C97-44A1-980E-ADAF64FCA6B8} = {7F21A16F-E93E-4DED-9853-BA6AD46F914C}
 		{1D363458-9B30-4613-8627-5459D465D376} = {7F21A16F-E93E-4DED-9853-BA6AD46F914C}
+		{44129261-07DD-4CF2-B1AB-DD40CCD7B8D8} = {7F21A16F-E93E-4DED-9853-BA6AD46F914C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA44247E-5E0F-4AD3-8F78-0EA7936A3F51}
