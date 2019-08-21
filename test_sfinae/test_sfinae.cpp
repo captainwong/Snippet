@@ -136,11 +136,11 @@ struct Generic {};
 template <typename T>
 class has_helloworld
 {
-	typedef char yes[1];
-	typedef char no[2];
+	typedef char yes;
+	typedef int no;
 
-	template <typename C> static yes& test(decltype(&C::helloworld));
-	template <typename C> static no& test(...);
+	template <typename C> static yes test(decltype(&C::helloworld));
+	template <typename C> static no test(...);
 
 public:
 	static const bool value = sizeof(test<T>(nullptr)) == sizeof(yes);
