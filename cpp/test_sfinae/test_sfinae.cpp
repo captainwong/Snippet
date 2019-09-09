@@ -331,7 +331,7 @@ void test()
 	printf("-----------determin_member_exists5 test-----------\n");
 	std::cout << std::boolalpha;
 	std::cout << HasX<A>::value << std::endl; // true
-	std::cout << HasX<B>::value << std::endl; // false
+	std::cout << HasX<B>::value << std::endl; // true
 	std::cout << HasX<C>::value << std::endl; // false
 }
 }
