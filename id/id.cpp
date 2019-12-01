@@ -149,6 +149,7 @@ public:
 
 int main()
 {
+	srand((unsigned int)time(nullptr));
 	for (int i = 0; i < 100; i++) {
 		ID::randomID().print();
 	}
