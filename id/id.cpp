@@ -1,4 +1,7 @@
-﻿#ifndef _CRT_SECURE_NO_WARNINGS
+﻿// inspired by https://github.com/jayknoxqu/id-number-util
+
+
+#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
