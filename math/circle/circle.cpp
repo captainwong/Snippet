@@ -31,7 +31,8 @@ int main()
 		s = a * h / 2.0;
 		pi += n * s;
 		n *= 2;
-
+		a = sqrt(h * h * (a / 2.0) * (a / 2.0));
+		h
 		printf("n=%d, pi=%lf\n", n, pi);
 	}
 }
