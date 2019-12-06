@@ -1,10 +1,13 @@
 #include <cstdint>
+#include <cinttypes>
 #include <stdio.h>
 #include <typeinfo>
 
 #define printType(type) printf("%s\t%s\t%zu\n", #type, typeid(type).name(), sizeof(type));
 #define printValue(value) printf("%s\t%s\t%d\n", #value, typeid(decltype(value)).name(), value);
+#define printUValue(value) printf("%s\t%s\t%u\n", #value, typeid(decltype(value)).name(), value);
 #define printLongValue(value) printf("%s\t%s\t%lld\n", #value, typeid(decltype(value)).name(), value);
+#define printULongValue(value) printf("%s\t%s\t%llu\n", #value, typeid(decltype(value)).name(), value);
 
 int main()
 {
@@ -45,20 +48,24 @@ int main()
 
 
 	printValue(INT8_MIN);
-	printValue(INT16_MIN);
-	printValue(INT32_MIN);
-	printLongValue(INT64_MIN);
 	printValue(INT8_MAX);
+
+	printValue(INT16_MIN);
 	printValue(INT16_MAX);
+
+	printValue(INT32_MIN);
 	printValue(INT32_MAX);
-	printLongValue(INT64_MAX);
+
 	printValue(UINT8_MAX);
 	printValue(UINT16_MAX);
-	printValue(UINT32_MAX);
-	printLongValue(UINT64_MAX);
+	printUValue(UINT32_MAX);
+	printULongValue(UINT64_MAX);
+
+	printLongValue(INT64_MIN);
+	printLongValue(INT64_MAX);
 
 	printLongValue(INTMAX_MIN);
 	printLongValue(INTMAX_MAX);
-	printLongValue(UINTMAX_MAX);
+	printULongValue(UINTMAX_MAX);
 
 }
