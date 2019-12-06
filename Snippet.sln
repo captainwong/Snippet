@@ -43,6 +43,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "timer", "src\misc\timer\tim
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tweetable_mathematical_art", "src\misc\tweetable_mathematical_art\tweetable_mathematical_art.vcxproj", "{29392833-25C6-46D8-9F6C-7314841DF236}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_integer_types", "src\cpp\test_integer_types\test_integer_types.vcxproj", "{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -275,6 +277,20 @@ Global
 		{29392833-25C6-46D8-9F6C-7314841DF236}.Release|x64.Build.0 = Release|x64
 		{29392833-25C6-46D8-9F6C-7314841DF236}.Release|x86.ActiveCfg = Release|Win32
 		{29392833-25C6-46D8-9F6C-7314841DF236}.Release|x86.Build.0 = Release|Win32
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}.Debug|ARM.ActiveCfg = Debug|Win32
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}.Debug|x64.ActiveCfg = Debug|x64
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}.Debug|x64.Build.0 = Debug|x64
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}.Debug|x86.ActiveCfg = Debug|Win32
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}.Debug|x86.Build.0 = Debug|Win32
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}.Release|Any CPU.ActiveCfg = Release|Win32
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}.Release|ARM.ActiveCfg = Release|Win32
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}.Release|ARM64.ActiveCfg = Release|Win32
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}.Release|x64.ActiveCfg = Release|x64
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}.Release|x64.Build.0 = Release|x64
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}.Release|x86.ActiveCfg = Release|Win32
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -296,6 +312,7 @@ Global
 		{3794EF5F-3FA7-455A-A71F-A294234A4C75} = {DE5EB242-D726-4D58-9636-B1517F35AB5E}
 		{CCA1628B-015C-4156-ABBA-26AF7AE026CA} = {DE5EB242-D726-4D58-9636-B1517F35AB5E}
 		{29392833-25C6-46D8-9F6C-7314841DF236} = {DE5EB242-D726-4D58-9636-B1517F35AB5E}
+		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6} = {7F21A16F-E93E-4DED-9853-BA6AD46F914C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA44247E-5E0F-4AD3-8F78-0EA7936A3F51}
