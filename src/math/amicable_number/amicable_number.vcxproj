@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{DE6E6142-07F1-41DF-AF7E-2678EF93E40D}</ProjectGuid>
+    <ProjectGuid>{A914385C-6287-4CF0-8196-55A04EC35E09}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>amicable_number</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>

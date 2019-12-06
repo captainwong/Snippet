@@ -32,7 +32,7 @@ int main()
 		pi += n * s;
 		n *= 2;
 		a = sqrt(h * h * (a / 2.0) * (a / 2.0));
-		h
+		//h
 		printf("n=%d, pi=%lf\n", n, pi);
 	}
 }

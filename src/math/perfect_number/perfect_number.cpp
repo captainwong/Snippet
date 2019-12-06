@@ -1,8 +1,6 @@
 // inspiration https://en.wikipedia.org/wiki/Perfect_number
 
-#define WIN32
-#define _CRT_SECURE_NO_WARNINGS
-#include "g:/dev_libs/jlib/jlib/log2.h"
+#include "g:/dev_libs/jlib/jlib/base/config.h"
 
 #include <iostream>
 #include <cstdint>
@@ -17,6 +15,7 @@
 #include <queue>
 #include <algorithm>
 #include <numeric>
+#include "g:/dev_libs/jlib/jlib/log2.h"
 
 using namespace jlib;
 
