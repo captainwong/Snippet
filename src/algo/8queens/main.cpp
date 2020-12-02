@@ -26,7 +26,7 @@ void print()
 	ss << std::endl;
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
-			ss << (chessboard[i][j] ? '1' : '0') << ' ';
+			ss << (chessboard[i][j] ? '#' : '_') << ' ';
 		}
 		ss << std::endl;
 	}
