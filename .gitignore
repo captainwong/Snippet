@@ -55,7 +55,7 @@ AlarmCenter/include
 
 # graph
 #*.bmp
-*.jpg
+#*.jpg
 *.jpeg
 *.jpe
 *.jifi
