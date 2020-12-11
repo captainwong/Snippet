@@ -54,6 +54,7 @@ public:
 		ans.clear();
 	}
 
+	//! 没他还真不好理解，感觉自己是个弱智。。。
 	void print() {
 		if (!enable_print) { return; }
 		printf("--------------------------------------\n0  ");
@@ -84,16 +85,15 @@ public:
 		printf("--------------------------------------\n\n");
 	}
 
-	//! 移除辅助行的节点c
+	//! 从辅助行节点 c 开始移除
 	void remove(PNode c) {
 		// 将辅助节点从辅助行内移除
 		c->left->right = c->right;
 		c->right->left = c->left;
 		auto down = c->down;
 		while (down != c) { // 向下遍历同列节点
-			auto right = down->right;
-			while (right != down) {
-				// 将同列节点的同行节点从该节点的列内移除
+			auto right = down->right; // 依次遍历该节点的同行节点
+			while (right != down) { // 将同行节点从该节点的列内移除
 				right->up->down = right->down;
 				right->down->up = right->up;
 				right = right->right;
@@ -102,17 +102,17 @@ public:
 		}
 
 		// 最终效果是若从 root 开始遍历，已经不包含 c，c 的同列，以及每个 c 同列节点的同行节点
-		// 但是！
+		// 但是！！！
 		// 从 c 节点仍然可以遍历所有这些被移除的节点，以便恢复，妙啊
 	}
 
-	//! 恢复辅助行的节点 c
+	//! 从辅助行节点 c 开始恢复
 	void resume(PNode c) {
 		// 将辅助节点重新置入辅助行内，而位置没变，妙啊
 		c->left->right = c;
 		c->right->left = c;
 
-		// 由于 remove 是从上到下遍历同列节点并移除了每个同列节点的行，
+		// 由于 remove 是从上到下遍历同列节点并移除了每个同列节点的同行节点，
 		// 这里就要按照相反的顺序从下到上恢复每一行
 		auto up = c->up; // 逆向遍历同列节点
 		while (up != c) {
@@ -126,6 +126,7 @@ public:
 		}
 	}
 
+	//! 递归跳动
 	bool dance(int depth) {
 		// 超级节点没有后继了，说明已经没有节点了，跳跃结束，算法结束
 		auto c1 = root->right;
@@ -138,6 +139,7 @@ public:
 		// 遍历辅助节点的列
 		for (auto down = c1->down; down != c1; down = down->down) {
 			// 选择一个同列节点，将列号 row 加入答案数组
+			// 这里是顺序选择同列节点，看资料应该选择该节点的同行内 1 最少的节点会更快，这里暂时没有尝试
 			ans.resize(depth + 1);
 			ans[depth] = down->row;
 
@@ -167,6 +169,7 @@ public:
 		print();
 		return false;
 	}
+
 
 	std::vector<int> solve(std::vector<std::vector<int>>& matrix) {
 		clear();
