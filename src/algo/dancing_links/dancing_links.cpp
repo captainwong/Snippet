@@ -6,6 +6,7 @@
 #include <list>
 #include <algorithm>
 #include <assert.h>
+#include "ansi_color_codes.h"
 
 
 // 给定一个由0-1组成的矩阵，是否能找到一个行的集合，使得集合中每一列都恰好包含一个1
@@ -23,35 +24,38 @@ public:
 		int col = 0; // column index, 0 为超级节点的列
 		int row = 0; // row index，0 为辅助行
 		int val = 0; // 没什么意义，辅助打印
+		bool covered = false; // 没什么意义，辅助打印
 	};
 
 	using Line = std::vector<PNode>;
 
 	PNode root{}; // 超级节点
+	Line headerLine{}; // 辅助行
 	int rows = 0; // 行数，包括辅助行
 	std::vector<int> ans{}; // 答案
 	bool enable_print = false;
+	std::vector<Line> lines; // 没什么意义，辅助打印
+	int steps = 0; // 没什么意义，辅助打印
 
 	explicit DancingLinks(bool enable_print = false) : enable_print(enable_print) {}
 	~DancingLinks() { clear(); }
 
 	void clear() {
-		auto p = root;
-		while (p) {
+		for (auto p : headerLine) {
 			auto down = p->down;
-			while (down != p) {
+			while (down && down != p) {
 				auto t = down->down;
 				delete down;
 				down = t;
 			}
-
-			auto right = p->right;
 			delete p;
-			p = right;
 		}
 		root = nullptr;
+		headerLine.clear();
 		rows = 0;
+		steps = 0;
 		ans.clear();
+		lines.clear();
 	}
 
 	//! 没他还真不好理解，感觉自己是个弱智。。。
@@ -85,15 +89,53 @@ public:
 		printf("--------------------------------------\n\n");
 	}
 
+	void print_all() {
+		if (!enable_print) { return; }
+		printf("--------------------------------------\n");
+		printf("steps=%d, ans=[", ++steps);
+		for (auto i : ans) { printf("%d,", i); }
+		printf("]\n");
+		printf("0  ");
+		for (auto node : headerLine) {
+			if (node->col == 0) { continue; }
+			if (node->covered) {
+				printf(RED("%d  "), node->col);
+			} else {
+				printf("%d  ", node->col);
+			}
+		}
+		printf("\n");
+		int row = 1;
+		for (const auto& line : lines) {
+			printf("%d  ", row++);
+			for (auto item : line) {
+				if (item) {
+					if (item->covered) {
+						printf(RED("%-2d "), item->val);
+					} else {
+						printf("%-2d ", item->val);
+					}					
+				} else {
+					printf("   ");
+				}
+			}
+			printf("\n");
+		}
+		printf("--------------------------------------\n\n");
+	}
+
 	//! 从辅助行节点 c 开始移除
 	void remove(PNode c) {
 		// 将辅助节点从辅助行内移除
 		c->left->right = c->right;
 		c->right->left = c->left;
+		c->covered = true;
 		auto down = c->down;
 		while (down != c) { // 向下遍历同列节点
+			down->covered = true;
 			auto right = down->right; // 依次遍历该节点的同行节点
 			while (right != down) { // 将同行节点从该节点的列内移除
+				right->covered = true;
 				right->up->down = right->down;
 				right->down->up = right->up;
 				right = right->right;
@@ -111,13 +153,16 @@ public:
 		// 将辅助节点重新置入辅助行内，而位置没变，妙啊
 		c->left->right = c;
 		c->right->left = c;
+		c->covered = false;
 
 		// 由于 remove 是从上到下遍历同列节点并移除了每个同列节点的同行节点，
 		// 这里就要按照相反的顺序从下到上恢复每一行
 		auto up = c->up; // 逆向遍历同列节点
 		while (up != c) {
+			up->covered = false;
 			auto right = up->right;
 			while (right != up) { // 重新将同列节点的同行节点恢复到同行节点原本的列内，妙啊
+				right->covered = false;
 				right->up->down = right;
 				right->down->up = right;
 				right = right->right;
@@ -134,7 +179,7 @@ public:
 
 		// 移除辅助节点
 		remove(c1);
-		print();
+		print_all();
 
 		// 遍历辅助节点的列
 		for (auto down = c1->down; down != c1; down = down->down) {
@@ -147,7 +192,7 @@ public:
 			auto right = down->right;
 			while (right != down) {
 				remove(right->header);
-				print();
+				print_all();
 				right = right->right;
 			}
 
@@ -159,14 +204,14 @@ public:
 			auto left = down->left;
 			while (left != down) {
 				resume(left->header);
-				print();
+				print_all();
 				left = left->left;
 			}
 		}
 
 		// 恢复辅助节点
 		resume(c1);
-		print();
+		print_all();
 		return false;
 	}
 
@@ -188,7 +233,8 @@ public:
 		// init root & header
 		root = new Node();
 		root->left = root->right = root;
-		Line headerLine; headerLine.push_back(root);
+		headerLine.push_back(root);
+		//lines.push_back(headerLine);
 		int nodecount = 0;
 		{
 			auto prev = root;
@@ -205,11 +251,12 @@ public:
 			rows++;
 		}
 
-		print();
+		print_all();
 
 		// construct matrix
 		{
 			for (auto& mline : matrix) {
+				Line line;
 				PNode first = nullptr, prev = nullptr;
 				for (size_t i = 0; i < mline.size(); i++) {
 					if (mline[i] == 1) {
@@ -235,6 +282,9 @@ public:
 							prev->right = node;
 						}
 						prev = node;
+						line.push_back(node);
+					} else {
+						line.push_back(nullptr);
 					}
 				}
 				if (prev) {
@@ -244,10 +294,11 @@ public:
 					first->left = prev;
 				}
 				rows++;
+				lines.push_back(line);
 			}
 		}
 
-		print();
+		print_all();
 
 		// solve
 		dance(0);
@@ -270,5 +321,5 @@ int main()
 
 	vector<int> ans = { 1, 4, 5 };
 
-	assert(DancingLinks().solve(matrix) == ans);
+	assert(DancingLinks(true).solve(matrix) == ans);
 }
