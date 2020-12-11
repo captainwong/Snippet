@@ -1,4 +1,4 @@
-// https://en.wikipedia.org/wiki/Dancing_Links
+﻿// https://en.wikipedia.org/wiki/Dancing_Links
 // https://www.cnblogs.com/grenet/p/3145800.html
 
 #include <vector>
@@ -8,7 +8,7 @@
 #include <assert.h>
 
 
-// ����һ����0-1��ɵľ����Ƿ����ҵ�һ���еļ��ϣ�ʹ�ü�����ÿһ�ж�ǡ�ð���һ��1
+// 给定一个由0-1组成的矩阵，是否能找到一个行的集合，使得集合中每一列都恰好包含一个1
 class DancingLinks
 {
 public:
@@ -20,16 +20,16 @@ public:
 		PNode up = nullptr;
 		PNode down = nullptr;
 		PNode header = nullptr; // column header
-		int col = 0; // column index, 0 Ϊ�����ڵ����
-		int row = 0; // row index��0 Ϊ������
-		int val = 0; // ûʲô���壬������ӡ
+		int col = 0; // column index, 0 为超级节点的列
+		int row = 0; // row index，0 为辅助行
+		int val = 0; // 没什么意义，辅助打印
 	};
 
 	using Line = std::vector<PNode>;
 
-	PNode root{}; // �����ڵ�
-	int rows = 0; // ����������������
-	std::vector<int> ans{}; // ��
+	PNode root{}; // 超级节点
+	int rows = 0; // 行数，包括辅助行
+	std::vector<int> ans{}; // 答案
 	bool enable_print = false;
 
 	explicit DancingLinks(bool enable_print = false) : enable_print(enable_print) {}
@@ -84,29 +84,40 @@ public:
 		printf("--------------------------------------\n\n");
 	}
 
+	//! 移除辅助行的节点c
 	void remove(PNode c) {
+		// 将辅助节点从辅助行内移除
 		c->left->right = c->right;
 		c->right->left = c->left;
 		auto down = c->down;
-		while (down != c) {
+		while (down != c) { // 向下遍历同列节点
 			auto right = down->right;
 			while (right != down) {
+				// 将同列节点的同行节点从该节点的列内移除
 				right->up->down = right->down;
 				right->down->up = right->up;
 				right = right->right;
 			}
 			down = down->down;
 		}
+
+		// 最终效果是若从 root 开始遍历，已经不包含 c，c 的同列，以及每个 c 同列节点的同行节点
+		// 但是！
+		// 从 c 节点仍然可以遍历所有这些被移除的节点，以便恢复，妙啊
 	}
 
+	//! 恢复辅助行的节点 c
 	void resume(PNode c) {
+		// 将辅助节点重新置入辅助行内，而位置没变，妙啊
 		c->left->right = c;
 		c->right->left = c;
 
-		auto up = c->up;
+		// 由于 remove 是从上到下遍历同列节点并移除了每个同列节点的行，
+		// 这里就要按照相反的顺序从下到上恢复每一行
+		auto up = c->up; // 逆向遍历同列节点
 		while (up != c) {
 			auto right = up->right;
-			while (right != up) {
+			while (right != up) { // 重新将同列节点的同行节点恢复到同行节点原本的列内，妙啊
 				right->up->down = right;
 				right->down->up = right;
 				right = right->right;
@@ -116,16 +127,21 @@ public:
 	}
 
 	bool dance(int depth) {
+		// 超级节点没有后继了，说明已经没有节点了，跳跃结束，算法结束
 		auto c1 = root->right;
 		if (c1 == root) { return true; }
 
+		// 移除辅助节点
 		remove(c1);
 		print();
 
+		// 遍历辅助节点的列
 		for (auto down = c1->down; down != c1; down = down->down) {
+			// 选择一个同列节点，将列号 row 加入答案数组
 			ans.resize(depth + 1);
 			ans[depth] = down->row;
 
+			// 依次移除同列节点的同行节点的辅助行头
 			auto right = down->right;
 			while (right != down) {
 				remove(right->header);
@@ -133,8 +149,11 @@ public:
 				right = right->right;
 			}
 
+			// 递归跳动，如果选择这个 down 节点就成功了，算法就结束了
 			if (dance(depth + 1)) { return true; }
 
+			// 没有成功，需要选择其他同列节点继续尝试，但在这之前要回复之前移除的节点
+			// 由于之前是从左到右移除的同行节点的辅助行头，这里就逆序回复每一个辅助行头
 			auto left = down->left;
 			while (left != down) {
 				resume(left->header);
@@ -143,6 +162,7 @@ public:
 			}
 		}
 
+		// 恢复辅助节点
 		resume(c1);
 		print();
 		return false;
@@ -152,7 +172,7 @@ public:
 		clear();
 
 		// check input
-		size_t cols = 0; // һ�е�Ԫ�ظ���
+		size_t cols = 0; // 一行的元素个数
 		do {
 			if (matrix.empty()) { return ans; }
 			cols = matrix[0].size();
