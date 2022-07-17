@@ -84,7 +84,7 @@ static void printCalendar(int year, int month, int day) {
 	}
 
 	enum PrintWhat pw = PrintDay;
-	for (int d = -day1.date.wday + 2, w = 0; d <= day1.date.mdays; d++) {
+	for (int d = -day1.date.wday + 2, w = 1; d <= day1.date.mdays; d++) {
 		if (d > 0) {
 			switch (pw) {
 			case PrintDay:
@@ -101,12 +101,16 @@ static void printCalendar(int year, int month, int day) {
 		} else {
 			printf("%-8s", " ");
 		}
-		if (++w % 7 == 0) {
+		if (w++ == 7 || d == day1.date.mdays) {
 			printf("\n");
+			int back = w - 1;
+			w = 1;
 			switch (pw) {
-			case PrintDay: pw = PrintExtra; d -= 7; break;
-			case PrintExtra: pw = PrintBlank; d -= 7; break;
-			case PrintBlank: pw = PrintDay; break;
+			case PrintDay: pw = PrintExtra; d -= back; break;
+			case PrintExtra: pw = PrintBlank; d -= back; break;
+			case PrintBlank: 
+				if (d == day1.date.mdays) return; 
+				pw = PrintDay; break;
 			}
 		}
 	}
@@ -114,7 +118,7 @@ static void printCalendar(int year, int month, int day) {
 
 int main(int argc, char** argv)
 {
-	int y = 0, m = 0, d = 0;
+	int y = 2022, m = 8, d = 1;
 	if (argc == 4) {
 		y = atoi(argv[1]);
 		m = atoi(argv[2]);
@@ -133,10 +137,8 @@ int main(int argc, char** argv)
 		printCalendar(date.date.y, date.date.m, date.date.d);
 	} else {
 		fprintf(stderr, "Not a valid date, supported range is 1900-1-31 to 2100-12-31\n");
-		getchar();
 		return 1;
 	}
 
-	getchar();
 	return 0;
 }
