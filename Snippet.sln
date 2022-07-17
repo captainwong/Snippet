@@ -51,6 +51,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "boost", "boost", "{9D6784AC
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dancing_links", "src\algo\dancing_links\dancing_links.vcxproj", "{E26885C8-BA3E-44A2-8D9C-246C65214FD6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "calendar", "src\misc\calendar\calendar.vcxproj", "{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -325,6 +327,20 @@ Global
 		{E26885C8-BA3E-44A2-8D9C-246C65214FD6}.Release|x64.Build.0 = Release|x64
 		{E26885C8-BA3E-44A2-8D9C-246C65214FD6}.Release|x86.ActiveCfg = Release|Win32
 		{E26885C8-BA3E-44A2-8D9C-246C65214FD6}.Release|x86.Build.0 = Release|Win32
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}.Debug|ARM.ActiveCfg = Debug|Win32
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}.Debug|x64.ActiveCfg = Debug|x64
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}.Debug|x64.Build.0 = Debug|x64
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}.Debug|x86.ActiveCfg = Debug|Win32
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}.Debug|x86.Build.0 = Debug|Win32
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}.Release|Any CPU.ActiveCfg = Release|Win32
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}.Release|ARM.ActiveCfg = Release|Win32
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}.Release|ARM64.ActiveCfg = Release|Win32
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}.Release|x64.ActiveCfg = Release|x64
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}.Release|x64.Build.0 = Release|x64
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}.Release|x86.ActiveCfg = Release|Win32
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -349,6 +365,7 @@ Global
 		{27FB31C1-0385-4EAF-8F25-DF88A23A7AC6} = {7F21A16F-E93E-4DED-9853-BA6AD46F914C}
 		{76CDAA8C-6C98-474A-857B-0C56A8D090E7} = {7F21A16F-E93E-4DED-9853-BA6AD46F914C}
 		{E26885C8-BA3E-44A2-8D9C-246C65214FD6} = {602B8FC9-FC9C-4A26-B8E6-46E3835CE0AF}
+		{8F04EE4A-9D85-4BEA-953F-6BFCEE662A93} = {DE5EB242-D726-4D58-9636-B1517F35AB5E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA44247E-5E0F-4AD3-8F78-0EA7936A3F51}
