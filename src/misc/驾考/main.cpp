@@ -54,6 +54,14 @@ size_t typeSize(int type_id) {
 	}
 }
 
+size_t count题目(const std::unordered_map<int, std::map<int, 题目basePtr>>& ps) {
+	size_t count = 0;
+	for (const auto& i : ps) {
+		count += i.second.size();
+	}
+	return count;
+}
+
 struct 题目manager {
 	static constexpr auto path = "驾考.dat";
 
@@ -88,10 +96,10 @@ struct 题目manager {
 	}
 
 	bool save(const std::unordered_map<int, std::map<int, 题目basePtr>>& ps) {
-		FILE* f = fopen(path, "rb");
+		FILE* f = fopen(path, "wb");
 		do {
 			if (!f) { break; }
-			size_t sz = ps.size();
+			size_t sz = count题目(ps);
 			write_elment(sz);
 			for (const auto& i : ps) {
 				for (const auto& j : i.second) {
@@ -112,20 +120,27 @@ std::unordered_map<int, std::map<int, 题目basePtr>> getAll题目() {
 
 	{
 		int baseline = 0;
+		int count = 0;
+		for (const auto& i : g_申请机动车驾驶证年龄条件) {
+			if ((int)i.申请车型.size() > count) {
+				count = (int)i.申请车型.size();
+			}
+		}
 		for (const auto& i : g_申请机动车驾驶证年龄条件) {
 			if (i.申请车型.empty()) {
 				baseline = i.id;
-			} else {
+			} else { 
 				for (size_t j = 0; j < i.申请车型.size(); j++) {
-					map[申请机动车驾驶证年龄条件题目::type_id][i.id - baseline] = 
-						(std::make_shared<申请机动车驾驶证年龄条件题目>(申请机动车驾驶证年龄条件题目{ i.id - baseline, i, j }));
+					int id = (i.id - baseline) * count + j;
+					map[申请机动车驾驶证年龄条件题目::type_id][id] =
+						(std::make_shared<申请机动车驾驶证年龄条件题目>(申请机动车驾驶证年龄条件题目{ id, i, j }));
 				}
 			}
 		}
 
 	}
 
-	{
+	/*{
 		using namespace 载人超载扣分;
 		int baseline = 0;
 		for (const auto& i : g_超载人扣分规则) {
@@ -166,7 +181,7 @@ std::unordered_map<int, std::map<int, 题目basePtr>> getAll题目() {
 					(std::make_shared<其他扣分题目>(其他扣分题目{ i.id - baseline, i.描述, i.扣分 }));
 			}
 		}
-	}
+	}*/
 
 	return map;
 }
@@ -193,6 +208,10 @@ void learn_超速扣分规则()
 
 void learn_其他扣分规则() {
 	do_test(g_题目[其他扣分::其他扣分题目::type_id]);
+}
+
+void learn_查看统计信息() {
+
 }
 
 struct 学习项目 {
@@ -233,11 +252,11 @@ int main()
 	g_题目 = getAll题目();
 	题目manager mgr;
 
-	// 读取
+	// 读取统计信息
 	auto fs = mgr.load();
 	for (const auto& i : fs) {
 		for (const auto& j : i.second) {
-			g_题目[i.first][j.first] = j.second;
+			g_题目[i.first][j.first]->stat = j.second->stat;
 		}
 	}
 
@@ -260,6 +279,9 @@ int main()
 		scanf("%d", &n);
 		if (n != 1) { break; }
 	}
+
+	// 保存统计信息
+	mgr.save(g_题目);
 
 	printf("再见！\n");
 }

@@ -11,6 +11,11 @@
 
 #define DECLARE_TYPE_ID static constexpr int type_id = __LINE__;
 
+struct Stat {
+	int total_correct_times = 0;
+	int total_incorrect_times = 0;
+};
+
 struct 题目base {
 	题目base(int id) : id(id) {}
 	virtual ~题目base() {}
@@ -19,11 +24,12 @@ struct 题目base {
 	int id;
 	bool answer_correct = false;
 	int incorrect_times = 0;
-	int total_incorrect_times = 0;
+	Stat stat{};
 
 	virtual std::string question() const = 0;
 	virtual std::string answer() const = 0;
 	virtual bool is_ans_correct(int ans) const = 0;
+
 
 	virtual void print_question() const { printf("%s\n", question().c_str()); }
 	virtual void print_options() const {}
@@ -32,23 +38,26 @@ struct 题目base {
 		if (is_ans_correct(ans)) {
 			printf(GREEN("回答正确！\n"));
 			answer_correct = true;
+			stat.total_correct_times++;
 		} else {
 			printf(RED("答案错误，正确答案为：%s\n"), answer().c_str());
 			incorrect_times++;
+			stat.total_incorrect_times;
 		}
 	}
 
 	virtual bool write(FILE* f) const {
 #define write_elment(elem) if (fwrite(&(elem), 1, sizeof((elem)), f) != sizeof((elem))) { fclose(f); f=NULL; return false; }
+		write_elment(type_id);
 		write_elment(id);
-		write_elment(total_incorrect_times);
+		write_elment(stat);
 		return true;
 	}
 
 	virtual bool read(FILE* f) {
 #define read_element(elem) if (fread(&(elem), 1, sizeof((elem)), f) != sizeof((elem))) { fclose(f); f=NULL; return false; }
 		read_element(id);
-		read_element(total_incorrect_times);
+		read_element(stat);
 		return true;
 	}
 };
@@ -58,7 +67,7 @@ typedef std::shared_ptr<题目base> 题目basePtr;
 int get_备选题目(const std::map<int, 题目basePtr>& 题目列表) {
 	std::vector<int> 待选题目;
 	for (const auto& i : 题目列表) {
-		if (i.second->answer_correct) {
+		if (!i.second->answer_correct) {
 			待选题目.push_back(i.first);
 		}
 	}
@@ -77,7 +86,7 @@ bool should_insert(const std::map<int, 题目basePtr>& 备选题目, int i, int  j) {
 }
 
 void print_ratio(const std::map<int, 题目basePtr>& 备选题目) {
-	printf(GREEN("恭喜你已经答完了所有题目！\n"));
+	printf(GREEN("恭喜你已经答完了所有%u道题目！\n"), 备选题目.size());
 	
 	std::list<int> ids;
 	for (const auto& i : 备选题目) {
@@ -102,9 +111,9 @@ void print_ratio(const std::map<int, 题目basePtr>& 备选题目) {
 	}
 
 	if (ids.empty()) {
-		printf(GREEN("好家伙，居然答对了所有%u道题，厉害厉害！\n"), 备选题目.size());
+		printf(GREEN("好家伙，居然一道题都没错，厉害厉害！\n"));
 	} else {
-		printf("您一共答对了%u道题，答错了%u道题，错题按照答错次数排序为：\n", 备选题目.size() - ids.size(), ids.size());
+		printf("您一共答错了%u道题，错题按照答错次数排序为：\n", ids.size());
 		for (const auto& i : ids) {
 			const auto iter = 备选题目.find(i);
 			if (iter == 备选题目.end()) continue;

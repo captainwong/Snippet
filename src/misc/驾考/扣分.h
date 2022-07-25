@@ -16,18 +16,6 @@ struct 扣分题目 : 题目base {
 	virtual bool is_ans_correct(int ans) const override {
 		return 扣分 == ans;
 	}
-
-	virtual bool read(FILE* f)override {
-		if (!__super::read(f)) return false;
-		read_element(扣分);
-		return true;
-	}
-
-	virtual bool write(FILE* f) const override {
-		if (!__super::write(f)) return false;
-		write_elment(扣分);
-		return true;
-	}
 };
 
 
@@ -108,19 +96,6 @@ struct 超载人扣分规则题目 : 扣分题目 {
 		return buf;
 	}
 
-	virtual bool read(FILE* f) override {
-		if (!__super::read(f)) return false;
-		read_element(车型);
-		read_element(范围);
-		return true;
-	}
-
-	virtual bool write(FILE* f) const override {
-		if (!__super::write(f)) return false;
-		write_elment(车型);
-		write_elment(范围);
-		return true;
-	}
 };
 typedef std::shared_ptr<超载人扣分规则题目> 超载人扣分规则题目Ptr;
 
@@ -213,21 +188,6 @@ struct 超速扣分规则题目 : 扣分题目 {
 		return buf;
 	}
 
-	virtual bool read(FILE* f) override {
-		if (!__super::read(f)) return false;
-		read_element(车型);
-		read_element(道路);
-		read_element(范围);
-		return true;
-	}
-
-	virtual bool write(FILE* f) const override {
-		if (!__super::write(f)) return false;
-		write_elment(车型);
-		write_elment(道路);
-		write_elment(范围);
-		return true;
-	}
 };
 typedef std::shared_ptr<超速扣分规则题目> 超速扣分规则题目Ptr;
 

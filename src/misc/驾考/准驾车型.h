@@ -147,33 +147,6 @@ struct 申请机动车驾驶证年龄条件 {
 	年龄限制 年龄限制{};
 	std::vector<车型> 申请车型{};
 	bool 全日制 = false;
-
-	bool write(FILE* f) const {
-		write_elment(id);
-		write_elment(年龄限制);
-		size_t sz = 申请车型.size();
-		write_elment(sz);
-		for (const auto& i : 申请车型) {
-			write_elment(i);
-		}
-		write_elment(全日制);
-		return true;
-	}
-
-	bool read(FILE* f) {
-		read_element(id);
-		read_element(年龄限制);
-		size_t sz;
-		read_element(sz);
-		for (size_t i = 0; i < sz; i++) {
-			int j;
-			read_element(j);
-			申请车型.push_back((车型)j);
-		}
-		if (申请车型.size() != sz) { return false; }
-		read_element(全日制);
-		return true;
-	}
 };
 
 static const 申请机动车驾驶证年龄条件 g_申请机动车驾驶证年龄条件[] = {
@@ -240,18 +213,14 @@ struct 申请机动车驾驶证年龄条件题目 : 题目base {
 
 	virtual bool read(FILE* f) override {
 		if (!__super::read(f)) return false;
-		if (!条件.read(f)) return false;
 		read_element(车型id);
 		return true;
 	}
 
 	virtual bool write(FILE* f) const override {
 		if (!__super::write(f)) return false;
-		if (!条件.write(f)) return false;
 		write_elment(车型id);
 		return true;
 	}
-
-
 };
 typedef std::shared_ptr<申请机动车驾驶证年龄条件题目> 申请机动车驾驶证年龄条件题目Ptr;
