@@ -145,8 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="准驾车型.h" />
-    <ClInclude Include="超速扣分.h" />
-    <ClInclude Include="载人超载扣分.h" />
+    <ClInclude Include="扣分.h" />
     <ClInclude Include="template.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

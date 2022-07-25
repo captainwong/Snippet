@@ -143,17 +143,46 @@ struct 年龄限制 {
 };
 
 struct 申请机动车驾驶证年龄条件 {
+	int id;
 	年龄限制 年龄限制{};
 	std::vector<车型> 申请车型{};
 	bool 全日制 = false;
+
+	bool write(FILE* f) const {
+		write_elment(id);
+		write_elment(年龄限制);
+		size_t sz = 申请车型.size();
+		write_elment(sz);
+		for (const auto& i : 申请车型) {
+			write_elment(i);
+		}
+		write_elment(全日制);
+		return true;
+	}
+
+	bool read(FILE* f) {
+		read_element(id);
+		read_element(年龄限制);
+		size_t sz;
+		read_element(sz);
+		for (size_t i = 0; i < sz; i++) {
+			int j;
+			read_element(j);
+			申请车型.push_back((车型)j);
+		}
+		if (申请车型.size() != sz) { return false; }
+		read_element(全日制);
+		return true;
+	}
 };
 
 static const 申请机动车驾驶证年龄条件 g_申请机动车驾驶证年龄条件[] = {
-	{{18, INT_MAX}, {小型汽车, 小型自动挡汽车, 残疾人专用小型自动挡载客汽车, 轻便摩托车} },
-	{{18, 60}, {低速载货汽车, 三轮汽车, 普通三轮摩托车, 普通二轮摩托车, 轮式专用机械车}},
-	{{20, 60}, {城市公交车, 中型客车, 大型货车, 轻型牵引挂车, 无轨电车, 有轨电车}},
-	{{22, 60}, {大型客车, 重型牵引挂车}},
-	{{19, 60}, {大型客车, 重型牵引挂车}, true},
+	{__LINE__, {}, {}},
+	{__LINE__, {18, INT_MAX}, {小型汽车, 小型自动挡汽车, 残疾人专用小型自动挡载客汽车, 轻便摩托车} },
+	{__LINE__, {18, 60}, {低速载货汽车, 三轮汽车, 普通三轮摩托车, 普通二轮摩托车, 轮式专用机械车}},
+	{__LINE__, {20, 60}, {城市公交车, 中型客车, 大型货车, 轻型牵引挂车, 无轨电车, 有轨电车}},
+	{__LINE__, {22, 60}, {大型客车, 重型牵引挂车}},
+	{__LINE__, {19, 60}, {大型客车, 重型牵引挂车}, true},
 };
 
 std::string 年龄限制2string(年龄限制 限制) {
@@ -167,14 +196,17 @@ std::string 年龄限制2string(年龄限制 限制) {
 std::vector<年龄限制> get_valid_年龄限制() {
 	std::vector<年龄限制> v;
 	for (const auto& i : g_申请机动车驾驶证年龄条件) {
-		v.push_back(i.年龄限制);
+		if (!i.申请车型.empty()) {
+			v.push_back(i.年龄限制);
+		}
 	}
 	return v;
 }
 
 struct 申请机动车驾驶证年龄条件题目 : 题目base {
-	申请机动车驾驶证年龄条件题目(申请机动车驾驶证年龄条件 条件, size_t 车型id) : 题目base(), 条件(条件), 车型id(车型id) {}
-
+	DECLARE_TYPE_ID
+	申请机动车驾驶证年龄条件题目() : 题目base(0) {}
+	申请机动车驾驶证年龄条件题目(int id, 申请机动车驾驶证年龄条件 条件, size_t 车型id) : 题目base(id), 条件(条件), 车型id(车型id) {}
 	申请机动车驾驶证年龄条件 条件;
 	size_t 车型id;
 
@@ -205,4 +237,21 @@ struct 申请机动车驾驶证年龄条件题目 : 题目base {
 		const auto& valid_年龄限制 = get_valid_年龄限制();
 		return !(ans < 1 || ans >(int)valid_年龄限制.size() || valid_年龄限制[ans - 1] != 条件.年龄限制);
 	}
+
+	virtual bool read(FILE* f) override {
+		if (!__super::read(f)) return false;
+		if (!条件.read(f)) return false;
+		read_element(车型id);
+		return true;
+	}
+
+	virtual bool write(FILE* f) const override {
+		if (!__super::write(f)) return false;
+		if (!条件.write(f)) return false;
+		write_elment(车型id);
+		return true;
+	}
+
+
 };
+typedef std::shared_ptr<申请机动车驾驶证年龄条件题目> 申请机动车驾驶证年龄条件题目Ptr;

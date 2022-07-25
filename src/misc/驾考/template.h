@@ -5,25 +5,29 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <memory>
 #include <jlib/util/str_util.h>
 #include <jlib/ansi_color_codes.h>
 
-
+#define DECLARE_TYPE_ID static constexpr int type_id = __LINE__;
 
 struct 题目base {
+	题目base(int id) : id(id) {}
 	virtual ~题目base() {}
+
+	DECLARE_TYPE_ID
+	int id;
 	bool answer_correct = false;
 	int incorrect_times = 0;
+	int total_incorrect_times = 0;
+
 	virtual std::string question() const = 0;
 	virtual std::string answer() const = 0;
 	virtual bool is_ans_correct(int ans) const = 0;
-	virtual void print_question() {
-		printf("%s\n", question().c_str());
-	}
+
+	virtual void print_question() const { printf("%s\n", question().c_str()); }
 	virtual void print_options() const {}
-	virtual void print_answer() {
-		printf("%s\n", answer().c_str());
-	}
+	virtual void print_answer() const { printf("%s\n", answer().c_str()); }
 	virtual void check_answer(int ans) {
 		if (is_ans_correct(ans)) {
 			printf(GREEN("回答正确！\n"));
@@ -33,14 +37,29 @@ struct 题目base {
 			incorrect_times++;
 		}
 	}
+
+	virtual bool write(FILE* f) const {
+#define write_elment(elem) if (fwrite(&(elem), 1, sizeof((elem)), f) != sizeof((elem))) { fclose(f); f=NULL; return false; }
+		write_elment(id);
+		write_elment(total_incorrect_times);
+		return true;
+	}
+
+	virtual bool read(FILE* f) {
+#define read_element(elem) if (fread(&(elem), 1, sizeof((elem)), f) != sizeof((elem))) { fclose(f); f=NULL; return false; }
+		read_element(id);
+		read_element(total_incorrect_times);
+		return true;
+	}
 };
 
-template <typename T = 题目base>
-int get_备选题目(const std::vector<T>& 题目列表) {
+typedef std::shared_ptr<题目base> 题目basePtr;
+
+int get_备选题目(const std::map<int, 题目basePtr>& 题目列表) {
 	std::vector<int> 待选题目;
-	for (size_t i = 0; i < 题目列表.size(); i++) {
-		if (!题目列表[i].answer_correct) {
-			待选题目.push_back((int)i);
+	for (const auto& i : 题目列表) {
+		if (i.second->answer_correct) {
+			待选题目.push_back(i.first);
 		}
 	}
 	if (待选题目.empty()) {
@@ -50,64 +69,75 @@ int get_备选题目(const std::vector<T>& 题目列表) {
 	}
 };
 
-template <typename T = 题目base>
-void print_ratio(const std::vector<T>& 备选题目) {
-	std::list<size_t> ids;
-	for (size_t i = 0; i < 备选题目.size(); i++) {
-		if (备选题目[i].incorrect_times > 0) {
+bool should_insert(const std::map<int, 题目basePtr>& 备选题目, int i, int  j) {
+	auto ii = 备选题目.find(i);
+	auto jj = 备选题目.find(j);
+	if (ii == 备选题目.end() || jj == 备选题目.end()) { printf("kill me"); return false; }
+	return jj->second->incorrect_times < ii->second->incorrect_times;
+}
+
+void print_ratio(const std::map<int, 题目basePtr>& 备选题目) {
+	printf(GREEN("恭喜你已经答完了所有题目！\n"));
+	
+	std::list<int> ids;
+	for (const auto& i : 备选题目) {
+		if (i.second->incorrect_times > 0) {
 			if (ids.empty()) {
-				ids.push_back(i);
+				ids.push_back(i.first);
 			} else {
 				bool inserted = false;
 				for (auto j = ids.begin(); j != ids.end(); j++) {
-					if (备选题目[*j].incorrect_times < 备选题目[i].incorrect_times) {
-						ids.insert(j, i);
+					if(should_insert(备选题目, *j, i.first)) {
+					//if (备选题目[*j]->incorrect_times < 备选题目[i.first]->incorrect_times) {
+						ids.insert(j, i.first);
 						inserted = true;
 						break;
 					}
 				}
 				if (!inserted) {
-					ids.push_back(i);
+					ids.push_back(i.first);
 				}
 			}
 		}
 	}
 
-	printf("您的错题按照答错次数排序为：\n");
-	for (const auto& i : ids) {
-		printf("答错%d次：%s\n正确答案为：%s\n\n",
-			   备选题目[i].incorrect_times,
-			   备选题目[i].question().c_str(),
-			   备选题目[i].answer().c_str());
+	if (ids.empty()) {
+		printf(GREEN("好家伙，居然答对了所有%u道题，厉害厉害！\n"), 备选题目.size());
+	} else {
+		printf("您一共答对了%u道题，答错了%u道题，错题按照答错次数排序为：\n", 备选题目.size() - ids.size(), ids.size());
+		for (const auto& i : ids) {
+			const auto iter = 备选题目.find(i);
+			if (iter == 备选题目.end()) continue;
+			const auto& ans = iter->second;
+			printf("答错%d次：%s\n正确答案为：%s\n\n",
+				   ans->incorrect_times,
+				   ans->question().c_str(),
+				   ans->answer().c_str());
+		}
+		printf(GREEN("继续加油，距离拿下科目一更进一步！\n"));
 	}
+	
 };
 
-template<typename T = 题目base>
-void do_test(std::vector<T>& 题目列表) {
+void do_test(std::map<int, 题目basePtr>& 题目列表) {
 	size_t answered_times = 0;
 
 	while (1) {
 		system("cls");
 
-		int id = get_备选题目<T>(题目列表);
+		int id = get_备选题目(题目列表);
 		if (id == -1) {
-			printf(GREEN("恭喜你已经答对了所有题目！\n"));
-			if (answered_times > 题目列表.size()) {
-				print_ratio(题目列表);
-				printf("继续加油，距离拿下科目一更进一步！\n");
-			} else {
-				printf(GREEN("好家伙，居然没有错一道题，厉害厉害！\n"));
-			}
+			print_ratio(题目列表);
 			break;
 		}
 
 		auto& 题目 = 题目列表[id];
-		题目.print_question();
-		题目.print_options();
+		题目->print_question();
+		题目->print_options();
 
 		int i = 0;
 		scanf("%d", &i);
-		题目.check_answer(i);
+		题目->check_answer(i);
 
 		answered_times++;
 		system("pause");
