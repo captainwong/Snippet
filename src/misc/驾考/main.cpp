@@ -103,6 +103,7 @@ struct 题目manager {
 			write_elment(sz);
 			for (const auto& i : ps) {
 				for (const auto& j : i.second) {
+					write_elment(i.first);
 					if (!j.second->write(f)) break;
 				}
 			}
@@ -132,8 +133,9 @@ std::unordered_map<int, std::map<int, 题目basePtr>> getAll题目() {
 			} else { 
 				for (size_t j = 0; j < i.申请车型.size(); j++) {
 					int id = (i.id - baseline) * count + j;
-					map[申请机动车驾驶证年龄条件题目::type_id][id] =
-						(std::make_shared<申请机动车驾驶证年龄条件题目>(申请机动车驾驶证年龄条件题目{ id, i, j }));
+					auto ptr = (std::make_shared<申请机动车驾驶证年龄条件题目>(申请机动车驾驶证年龄条件题目{ id, i, j }));
+					int tid = ptr->type_id;
+					map[申请机动车驾驶证年龄条件题目::type_id][id] = ptr;
 				}
 			}
 		}
@@ -211,7 +213,39 @@ void learn_其他扣分规则() {
 }
 
 void learn_查看统计信息() {
+	//size_t total_ans_times = 0;
+	//size_t total_incorrect_times = 0;
 
+	std::map<double, std::pair<int, int>> ids;
+
+	for (const auto& i : g_题目) {
+		for (const auto& j : i.second) {
+			if (j.second->stat.total_incorrect_times > 0) {
+				double ratio = j.second->stat.total_incorrect_times * 100.0 / (j.second->stat.total_correct_times + j.second->stat.total_incorrect_times);
+				if (ids.empty()) {
+					ids[ratio] = std::make_pair<>(i.first, j.first);
+				} else {
+					for (auto begin = ids.begin(); begin != ids.end(); begin++) {
+						if (begin->first < ratio) {
+							ids.insert(begin, std::make_pair<>(ratio, std::make_pair<>(i.first, j.first)));
+							break;
+						}
+					}
+				}
+			}
+
+		}
+	}
+
+	if (ids.empty()) {
+		printf("答题记录为空！\n");
+	} else {
+		printf("一共答错过%u道题，错题按照错误率排序为：\n", ids.size());
+		for (const auto& i : ids) {
+			const auto& q = g_题目[i.second.first][i.second.second];
+			printf("错误率%2.2f，题目：%s\n正确答案为：%s\n\n", i.first, q->question().c_str(), q->answer().c_str());
+		}
+	}
 }
 
 struct 学习项目 {
@@ -243,6 +277,7 @@ int main()
 	append(learn_载人超载扣分规则);
 	append(learn_超速扣分规则);
 	append(learn_其他扣分规则);
+	append(learn_查看统计信息);
 
 #undef append
 

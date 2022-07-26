@@ -1,4 +1,5 @@
 *.log*
+*.dat
 
 # Compiled Object files
 *.slo

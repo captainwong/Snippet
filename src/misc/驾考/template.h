@@ -12,8 +12,8 @@
 #define DECLARE_TYPE_ID static constexpr int type_id = __LINE__;
 
 struct Stat {
-	int total_correct_times = 0;
-	int total_incorrect_times = 0;
+	size_t total_correct_times = 0;
+	size_t total_incorrect_times = 0;
 };
 
 struct 题目base {
@@ -42,13 +42,12 @@ struct 题目base {
 		} else {
 			printf(RED("答案错误，正确答案为：%s\n"), answer().c_str());
 			incorrect_times++;
-			stat.total_incorrect_times;
+			stat.total_incorrect_times++;
 		}
 	}
 
 	virtual bool write(FILE* f) const {
 #define write_elment(elem) if (fwrite(&(elem), 1, sizeof((elem)), f) != sizeof((elem))) { fclose(f); f=NULL; return false; }
-		write_elment(type_id);
 		write_elment(id);
 		write_elment(stat);
 		return true;
