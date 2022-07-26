@@ -145,7 +145,7 @@ struct 年龄限制 {
 struct 申请机动车驾驶证年龄条件 {
 	int id;
 	年龄限制 年龄限制{};
-	std::vector<车型> 申请车型{};
+	std::vector<车型> 车型{};
 	bool 全日制 = false;
 };
 
@@ -169,7 +169,7 @@ std::string 年龄限制2string(年龄限制 限制) {
 std::vector<年龄限制> get_valid_年龄限制() {
 	std::vector<年龄限制> v;
 	for (const auto& i : g_申请机动车驾驶证年龄条件) {
-		if (!i.申请车型.empty()) {
+		if (!i.车型.empty()) {
 			v.push_back(i.年龄限制);
 		}
 	}
@@ -185,7 +185,7 @@ struct 申请机动车驾驶证年龄条件题目 : 题目base {
 
 	virtual std::string question() const override {
 		char buf[1024];
-		auto 车型 = 车型2string(条件.申请车型[车型id]);
+		auto 车型 = 车型2string(条件.车型[车型id]);
 		if (条件.全日制) {
 			snprintf(buf, sizeof(buf), "接受全日制驾驶职业教育的学生，申请%s准驾车型的，年龄限制在？", 车型);
 		} else {

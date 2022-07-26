@@ -113,15 +113,15 @@ protected:
 			int baseline = 0;
 			int count = 0;
 			for (const auto& i : g_申请机动车驾驶证年龄条件) {
-				if ((int)i.申请车型.size() > count) {
-					count = (int)i.申请车型.size();
+				if ((int)i.车型.size() > count) {
+					count = (int)i.车型.size();
 				}
 			}
 			for (const auto& i : g_申请机动车驾驶证年龄条件) {
-				if (i.申请车型.empty()) {
+				if (i.车型.empty()) {
 					baseline = i.id;
 				} else {
-					for (size_t j = 0; j < i.申请车型.size(); j++) {
+					for (size_t j = 0; j < i.车型.size(); j++) {
 						int id = (i.id - baseline) * count + j;
 						auto ptr = (std::make_shared<申请机动车驾驶证年龄条件题目>(申请机动车驾驶证年龄条件题目{ id, i, j }));
 						int tid = ptr->type_id;
@@ -135,13 +135,20 @@ protected:
 		{
 			using namespace 载人超载扣分;
 			int baseline = 0;
+			int count = 0;
+			for (const auto& i : g_超载人扣分规则) {
+				if ((int)i.车型.size() > count) {
+					count = (int)i.车型.size();
+				}
+			}
 			for (const auto& i : g_超载人扣分规则) {
 				if (i.车型.empty()) {
 					baseline = i.id;
 				} else {
 					for (const auto& j : i.车型) {
-						map[超载人扣分规则题目::type_id][i.id - baseline] =
-							(std::make_shared<超载人扣分规则题目>(超载人扣分规则题目{ i.id - baseline, j, i.范围, i.扣分 }));
+						int id = (i.id - baseline) * count + j;
+						map[超载人扣分规则题目::type_id][id] =
+							(std::make_shared<超载人扣分规则题目>(超载人扣分规则题目{ id, j, i.范围, i.扣分 }));
 					}
 				}
 			}
@@ -150,13 +157,20 @@ protected:
 		{
 			using namespace 超速扣分;
 			int baseline = 0;
+			int count = 0;
+			for (const auto& i : g_超速扣分规则) {
+				if ((int)i.车型.size() > count) {
+					count = (int)i.车型.size();
+				}
+			}
 			for (const auto& i : g_超速扣分规则) {
 				if (i.车型.empty()) {
 					baseline = i.id;
 				} else {
 					for (const auto& j : i.车型) {
-						map[超速扣分规则题目::type_id][i.id - baseline] =
-							(std::make_shared<超速扣分规则题目>(超速扣分规则题目{ i.id - baseline, j, i.道路, i.范围, i.扣分 }));
+						int id = (i.id - baseline) * count + j;
+						map[超速扣分规则题目::type_id][id] =
+							(std::make_shared<超速扣分规则题目>(超速扣分规则题目{ id, j, i.道路, i.范围, i.扣分 }));
 					}
 				}
 			}
@@ -206,17 +220,17 @@ protected:
 		//size_t total_ans_times = 0;
 		//size_t total_incorrect_times = 0;
 
-		std::map<double, std::pair<int, int>> ids;
+		std::map<std::pair<int, int>, double> ids;
 		for (const auto& i : all题目) {
 			for (const auto& j : i.second) {
 				if (j.second->stat.total_incorrect_times > 0) {
 					double ratio = j.second->stat.total_incorrect_times * 100.0 / (j.second->stat.total_correct_times + j.second->stat.total_incorrect_times);
 					if (ids.empty()) {
-						ids[ratio] = std::make_pair<>(i.first, j.first);
+						ids[std::make_pair<>(i.first, j.first)] = ratio;
 					} else {
 						for (auto begin = ids.begin(); begin != ids.end(); begin++) {
-							if (begin->first < ratio) {
-								ids.insert(begin, std::make_pair<>(ratio, std::make_pair<>(i.first, j.first)));
+							if (begin->second < ratio) {
+								ids.insert(begin, std::make_pair<>(std::make_pair<>(i.first, j.first), ratio));
 								break;
 							}
 						}
@@ -231,8 +245,8 @@ protected:
 		} else {
 			printf("一共答错过%u道题，错题按照错误率排序为：\n", ids.size());
 			for (const auto& i : ids) {
-				const auto& q = all题目[i.second.first][i.second.second];
-				printf("错误率%2.2f，题目：%s\n正确答案为：%s\n\n", i.first, q->question().c_str(), q->answer().c_str());
+				const auto& q = all题目[i.first.first][i.first.second];
+				printf("错误率%2.2f，题目：%s\n正确答案为：%s\n\n", i.second, q->question().c_str(), q->answer().c_str());
 			}
 		}
 	}
