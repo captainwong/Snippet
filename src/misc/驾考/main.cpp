@@ -1,13 +1,13 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define NOMINMAX
 
-
 #include <functional>
 #include <unordered_set>
 #include <unordered_map>
 #include <map>
 #include <time.h>
 #include <Windows.h>
+#include <jlib/base/noncopyable.h>
 
 #include "准驾车型.h"
 #include "扣分.h"
@@ -34,36 +34,29 @@ static_assert(
 	}), "有typeid雷同，查一下行号"
 );
 
-size_t typeSize(int type_id) {
-	switch (type_id) {
-	case 申请机动车驾驶证年龄条件题目::type_id: return sizeof(申请机动车驾驶证年龄条件题目);
-	case 载人超载扣分::超载人扣分规则题目::type_id:return sizeof(载人超载扣分::超载人扣分规则题目);
-	case 超速扣分::超速扣分规则题目::type_id:return sizeof(超速扣分::超速扣分规则题目);
-	case 其他扣分::其他扣分题目::type_id:return sizeof(其他扣分::其他扣分题目);
-	default: return 0;
-	}
-}
 
-题目basePtr create题目(int type_id) {
-	switch (type_id) {
-	case 申请机动车驾驶证年龄条件题目::type_id: return std::make_shared<申请机动车驾驶证年龄条件题目>();
-	case 载人超载扣分::超载人扣分规则题目::type_id:return std::make_shared<载人超载扣分::超载人扣分规则题目>();
-	case 超速扣分::超速扣分规则题目::type_id:return std::make_shared<超速扣分::超速扣分规则题目>();
-	case 其他扣分::其他扣分题目::type_id:return std::make_shared<其他扣分::其他扣分题目>();
-	default: return nullptr;
-	}
-}
-
-size_t count题目(const std::unordered_map<int, std::map<int, 题目basePtr>>& ps) {
-	size_t count = 0;
-	for (const auto& i : ps) {
-		count += i.second.size();
-	}
-	return count;
-}
-
-struct 题目manager {
+class 驾考 : jlib::noncopyable {
+protected:
 	static constexpr auto path = "驾考.dat";
+	std::unordered_map<int, std::map<int, 题目basePtr>> all题目{};
+
+	题目basePtr create题目(int type_id) {
+		switch (type_id) {
+		case 申请机动车驾驶证年龄条件题目::type_id: return std::make_shared<申请机动车驾驶证年龄条件题目>();
+		case 载人超载扣分::超载人扣分规则题目::type_id:return std::make_shared<载人超载扣分::超载人扣分规则题目>();
+		case 超速扣分::超速扣分规则题目::type_id:return std::make_shared<超速扣分::超速扣分规则题目>();
+		case 其他扣分::其他扣分题目::type_id:return std::make_shared<其他扣分::其他扣分题目>();
+		default: return nullptr;
+		}
+	}
+
+	size_t count题目(const std::unordered_map<int, std::map<int, 题目basePtr>>& ps) {
+		size_t count = 0;
+		for (const auto& i : ps) {
+			count += i.second.size();
+		}
+		return count;
+	}
 
 	std::unordered_map<int, std::map<int, 题目basePtr>> load() {
 		std::unordered_map<int, std::map<int, 题目basePtr>> ps;
@@ -112,146 +105,214 @@ struct 题目manager {
 		if (f) { fclose(f); }
 		return false;
 	}
-};
 
-std::unordered_map<int, std::map<int, 题目basePtr>> g_题目{};
+	std::unordered_map<int, std::map<int, 题目basePtr>> getAll题目() {
+		std::unordered_map<int, std::map<int, 题目basePtr>> map;
 
-std::unordered_map<int, std::map<int, 题目basePtr>> getAll题目() {
-	std::unordered_map<int, std::map<int, 题目basePtr>> map;
-
-	{
-		int baseline = 0;
-		int count = 0;
-		for (const auto& i : g_申请机动车驾驶证年龄条件) {
-			if ((int)i.申请车型.size() > count) {
-				count = (int)i.申请车型.size();
-			}
-		}
-		for (const auto& i : g_申请机动车驾驶证年龄条件) {
-			if (i.申请车型.empty()) {
-				baseline = i.id;
-			} else { 
-				for (size_t j = 0; j < i.申请车型.size(); j++) {
-					int id = (i.id - baseline) * count + j;
-					auto ptr = (std::make_shared<申请机动车驾驶证年龄条件题目>(申请机动车驾驶证年龄条件题目{ id, i, j }));
-					int tid = ptr->type_id;
-					map[申请机动车驾驶证年龄条件题目::type_id][id] = ptr;
+		{
+			int baseline = 0;
+			int count = 0;
+			for (const auto& i : g_申请机动车驾驶证年龄条件) {
+				if ((int)i.申请车型.size() > count) {
+					count = (int)i.申请车型.size();
 				}
 			}
-		}
-
-	}
-
-	/*{
-		using namespace 载人超载扣分;
-		int baseline = 0;
-		for (const auto& i : g_超载人扣分规则) {
-			if (i.车型.empty()) {
-				baseline = i.id;
-			} else {
-				for (const auto& j : i.车型) {
-					map[超载人扣分规则题目::type_id][i.id - baseline] =
-						(std::make_shared<超载人扣分规则题目>(超载人扣分规则题目{ i.id - baseline, j, i.范围, i.扣分 }));
-				}
-			}
-		}
-	}
-
-	{
-		using namespace 超速扣分;
-		int baseline = 0;
-		for (const auto& i : g_超速扣分规则) {
-			if (i.车型.empty()) {
-				baseline = i.id;
-			} else {
-				for (const auto& j : i.车型) {
-					map[超速扣分规则题目::type_id][i.id - baseline] =
-						(std::make_shared<超速扣分规则题目>(超速扣分规则题目{ i.id - baseline, j, i.道路, i.范围, i.扣分 }));
-				}
-			}
-		}
-	}
-
-	{
-		using namespace 其他扣分;
-		int baseline = 0;
-		for (const auto& i : g_其他扣分规则) {
-			if (i.描述 == NULL) {
-				baseline = i.id;
-			} else {
-				map[其他扣分题目::type_id][i.id - baseline] =
-					(std::make_shared<其他扣分题目>(其他扣分题目{ i.id - baseline, i.描述, i.扣分 }));
-			}
-		}
-	}*/
-
-	return map;
-}
-
-void learn_准驾车型及代号()
-{
-	printf("%s\n", 准驾车型及代号2string(rand() % 2).c_str());
-}
-
-void learn_申请机动车驾驶证年龄条件()
-{
-	do_test(g_题目[申请机动车驾驶证年龄条件题目::type_id]);
-}
-
-void learn_载人超载扣分规则()
-{
-	do_test(g_题目[载人超载扣分::超载人扣分规则题目::type_id]);
-}
-
-void learn_超速扣分规则()
-{
-	do_test(g_题目[超速扣分::超速扣分规则题目::type_id]);
-}
-
-void learn_其他扣分规则() {
-	do_test(g_题目[其他扣分::其他扣分题目::type_id]);
-}
-
-void learn_查看统计信息() {
-	//size_t total_ans_times = 0;
-	//size_t total_incorrect_times = 0;
-
-	std::map<double, std::pair<int, int>> ids;
-
-	for (const auto& i : g_题目) {
-		for (const auto& j : i.second) {
-			if (j.second->stat.total_incorrect_times > 0) {
-				double ratio = j.second->stat.total_incorrect_times * 100.0 / (j.second->stat.total_correct_times + j.second->stat.total_incorrect_times);
-				if (ids.empty()) {
-					ids[ratio] = std::make_pair<>(i.first, j.first);
+			for (const auto& i : g_申请机动车驾驶证年龄条件) {
+				if (i.申请车型.empty()) {
+					baseline = i.id;
 				} else {
-					for (auto begin = ids.begin(); begin != ids.end(); begin++) {
-						if (begin->first < ratio) {
-							ids.insert(begin, std::make_pair<>(ratio, std::make_pair<>(i.first, j.first)));
-							break;
-						}
+					for (size_t j = 0; j < i.申请车型.size(); j++) {
+						int id = (i.id - baseline) * count + j;
+						auto ptr = (std::make_shared<申请机动车驾驶证年龄条件题目>(申请机动车驾驶证年龄条件题目{ id, i, j }));
+						int tid = ptr->type_id;
+						map[申请机动车驾驶证年龄条件题目::type_id][id] = ptr;
 					}
 				}
 			}
 
 		}
+
+		{
+			using namespace 载人超载扣分;
+			int baseline = 0;
+			for (const auto& i : g_超载人扣分规则) {
+				if (i.车型.empty()) {
+					baseline = i.id;
+				} else {
+					for (const auto& j : i.车型) {
+						map[超载人扣分规则题目::type_id][i.id - baseline] =
+							(std::make_shared<超载人扣分规则题目>(超载人扣分规则题目{ i.id - baseline, j, i.范围, i.扣分 }));
+					}
+				}
+			}
+		}
+
+		{
+			using namespace 超速扣分;
+			int baseline = 0;
+			for (const auto& i : g_超速扣分规则) {
+				if (i.车型.empty()) {
+					baseline = i.id;
+				} else {
+					for (const auto& j : i.车型) {
+						map[超速扣分规则题目::type_id][i.id - baseline] =
+							(std::make_shared<超速扣分规则题目>(超速扣分规则题目{ i.id - baseline, j, i.道路, i.范围, i.扣分 }));
+					}
+				}
+			}
+		}
+
+		{
+			using namespace 其他扣分;
+			int baseline = 0;
+			for (const auto& i : g_其他扣分规则) {
+				if (i.描述 == NULL) {
+					baseline = i.id;
+				} else {
+					map[其他扣分题目::type_id][i.id - baseline] =
+						(std::make_shared<其他扣分题目>(其他扣分题目{ i.id - baseline, i.描述, i.扣分 }));
+				}
+			}
+		}
+
+		return map;
 	}
 
-	if (ids.empty()) {
-		printf("答题记录为空！\n");
-	} else {
-		printf("一共答错过%u道题，错题按照错误率排序为：\n", ids.size());
-		for (const auto& i : ids) {
-			const auto& q = g_题目[i.second.first][i.second.second];
-			printf("错误率%2.2f，题目：%s\n正确答案为：%s\n\n", i.first, q->question().c_str(), q->answer().c_str());
+	void learn_准驾车型及代号()
+	{
+		printf("%s\n", 准驾车型及代号2string(rand() % 2).c_str());
+	}
+
+	void learn_申请机动车驾驶证年龄条件()
+	{
+		do_test(all题目[申请机动车驾驶证年龄条件题目::type_id]);
+	}
+
+	void learn_载人超载扣分规则()
+	{
+		do_test(all题目[载人超载扣分::超载人扣分规则题目::type_id]);
+	}
+
+	void learn_超速扣分规则()
+	{
+		do_test(all题目[超速扣分::超速扣分规则题目::type_id]);
+	}
+
+	void learn_其他扣分规则() {
+		do_test(all题目[其他扣分::其他扣分题目::type_id]);
+	}
+
+	void learn_查看统计信息() {
+		//size_t total_ans_times = 0;
+		//size_t total_incorrect_times = 0;
+
+		std::map<double, std::pair<int, int>> ids;
+		for (const auto& i : all题目) {
+			for (const auto& j : i.second) {
+				if (j.second->stat.total_incorrect_times > 0) {
+					double ratio = j.second->stat.total_incorrect_times * 100.0 / (j.second->stat.total_correct_times + j.second->stat.total_incorrect_times);
+					if (ids.empty()) {
+						ids[ratio] = std::make_pair<>(i.first, j.first);
+					} else {
+						for (auto begin = ids.begin(); begin != ids.end(); begin++) {
+							if (begin->first < ratio) {
+								ids.insert(begin, std::make_pair<>(ratio, std::make_pair<>(i.first, j.first)));
+								break;
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+		if (ids.empty()) {
+			printf("答题记录为空！\n");
+		} else {
+			printf("一共答错过%u道题，错题按照错误率排序为：\n", ids.size());
+			for (const auto& i : ids) {
+				const auto& q = all题目[i.second.first][i.second.second];
+				printf("错误率%2.2f，题目：%s\n正确答案为：%s\n\n", i.first, q->question().c_str(), q->answer().c_str());
+			}
 		}
 	}
-}
 
-struct 学习项目 {
-	std::string name;
-	std::function<void(void)> func;
+	void learn_清空统计信息() {
+		int yes = 0;
+		printf(RED("确定要清空统计信息吗？此操作无法恢复！\n"));
+		printf("输入1继续，输入其他任意值取消：");
+		scanf("%d", &yes);
+		if (yes != 1) return;
+		for (auto& i : all题目) {
+			for (auto& j : i.second) {
+				j.second->stat.clear();
+			}
+		}
+		save(all题目);
+		printf("已成功清除统计信息。\n");
+	}
+
+public:
+	void run()
+	{
+		struct 学习项目 {
+			std::string name;
+			std::function<void(驾考*)> func;
+		};
+
+		//学习项目 ddd{ "", std::bind(&题目manager::learn_申请机动车驾驶证年龄条件, std::placeholders::_1) };
+		std::vector<学习项目> 学习项目;
+#define append(func) 学习项目.push_back(struct 学习项目({#func, std::bind(&驾考::func, std::placeholders::_1)})); 学习项目.back().name = 学习项目.back().name.substr(6);
+		append(learn_准驾车型及代号);
+		append(learn_申请机动车驾驶证年龄条件);
+		append(learn_载人超载扣分规则);
+		append(learn_超速扣分规则);
+		append(learn_其他扣分规则);
+		append(learn_查看统计信息);
+		append(learn_清空统计信息);
+
+#undef append
+
+		time_t start = time(NULL);
+		srand((unsigned int)start);
+
+		all题目 = getAll题目();
+
+		// 读取统计信息
+		auto fs = load();
+		for (const auto& i : fs) {
+			for (const auto& j : i.second) {
+				all题目[i.first][j.first]->stat = j.second->stat;
+			}
+		}
+
+		while (1) {
+			int n = 0;
+			do {
+				system("cls");
+				printf("当前可以选择的项目有：\n");
+				for (size_t i = 0; i < 学习项目.size(); i++) {
+					const auto& 项目 = 学习项目[i];
+					printf("  %d：%s\n", i + 1, 项目.name.c_str());
+				}
+				printf("请选择要学习的项目：");
+				scanf("%d", &n);
+			} while (n < 1 || n >(int)学习项目.size());
+
+			学习项目[n - 1].func(this);
+
+			printf("是否继续学习？按1继续，其他按键退出\n");
+			scanf("%d", &n);
+			if (n != 1) { break; }
+		}
+
+		// 保存统计信息
+		save(all题目);
+
+		printf("再见！\n");
+	}
 };
+
 
 int main()
 {
@@ -269,54 +330,5 @@ int main()
 	wcscpy(cfi.FaceName, L"仿宋");
 	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
 
-	std::vector<学习项目> 学习项目;
-#define append(func) 学习项目.push_back(struct 学习项目({#func, &func})); 学习项目.back().name = 学习项目.back().name.substr(6);
-
-	append(learn_准驾车型及代号);
-	append(learn_申请机动车驾驶证年龄条件);
-	append(learn_载人超载扣分规则);
-	append(learn_超速扣分规则);
-	append(learn_其他扣分规则);
-	append(learn_查看统计信息);
-
-#undef append
-
-	time_t start = time(NULL);
-	srand((unsigned int)start);
-
-	g_题目 = getAll题目();
-	题目manager mgr;
-
-	// 读取统计信息
-	auto fs = mgr.load();
-	for (const auto& i : fs) {
-		for (const auto& j : i.second) {
-			g_题目[i.first][j.first]->stat = j.second->stat;
-		}
-	}
-
-	while (1) {
-		int n = 0;
-		do {
-			system("cls");
-			printf("当前可以选择的项目有：\n");
-			for (size_t i = 0; i < 学习项目.size(); i++) {
-				const auto& 项目 = 学习项目[i];
-				printf("  %d：%s\n", i + 1, 项目.name.c_str());
-			}
-			printf("请选择要学习的项目：");
-			scanf("%d", &n);
-		} while (n < 1 || n >(int)学习项目.size());
-
-		学习项目[n - 1].func();
-
-		printf("是否继续学习？按1继续，其他按键退出\n");
-		scanf("%d", &n);
-		if (n != 1) { break; }
-	}
-
-	// 保存统计信息
-	mgr.save(g_题目);
-
-	printf("再见！\n");
+	驾考().run();
 }

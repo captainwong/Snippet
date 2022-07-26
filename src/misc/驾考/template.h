@@ -14,6 +14,9 @@
 struct Stat {
 	size_t total_correct_times = 0;
 	size_t total_incorrect_times = 0;
+	void clear() {
+		memset(this, 0, sizeof(*this));
+	}
 };
 
 struct ÌâÄ¿base {
