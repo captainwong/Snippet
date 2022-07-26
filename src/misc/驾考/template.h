@@ -33,7 +33,6 @@ struct 题目base {
 	virtual std::string answer() const = 0;
 	virtual bool is_ans_correct(int ans) const = 0;
 
-
 	virtual void print_question() const { printf("%s\n", question().c_str()); }
 	virtual void print_options() const {}
 	virtual void print_answer() const { printf("%s\n", answer().c_str()); }
@@ -99,7 +98,6 @@ void print_ratio(const std::map<int, 题目basePtr>& 备选题目) {
 				bool inserted = false;
 				for (auto j = ids.begin(); j != ids.end(); j++) {
 					if(should_insert(备选题目, *j, i.first)) {
-					//if (备选题目[*j]->incorrect_times < 备选题目[i.first]->incorrect_times) {
 						ids.insert(j, i.first);
 						inserted = true;
 						break;
@@ -127,30 +125,33 @@ void print_ratio(const std::map<int, 题目basePtr>& 备选题目) {
 		}
 		printf(GREEN("继续加油，距离拿下科目一更进一步！\n"));
 	}
-	
 };
 
-void do_test(std::map<int, 题目basePtr>& 题目列表) {
-	size_t answered_times = 0;
+void clear_ratio(std::map<int, 题目basePtr>& 备选题目) {
+	for (auto& i : 备选题目) {
+		i.second->answer_correct = false;
+		i.second->incorrect_times = 0;
+	}
+}
 
+void do_test(std::map<int, 题目basePtr>& 题目列表) {
 	while (1) {
 		system("cls");
 
-		int id = get_备选题目(题目列表);
-		if (id == -1) {
+		int i = get_备选题目(题目列表);
+		if (i == -1) {
 			print_ratio(题目列表);
+			clear_ratio(题目列表);
 			break;
 		}
 
-		auto& 题目 = 题目列表[id];
+		auto& 题目 = 题目列表[i];
 		题目->print_question();
 		题目->print_options();
 
-		int i = 0;
 		scanf("%d", &i);
 		题目->check_answer(i);
 
-		answered_times++;
 		system("pause");
 	}
 }

@@ -192,23 +192,19 @@ protected:
 		return map;
 	}
 
-	void learn_准驾车型及代号()
-	{
+	void learn_准驾车型及代号() {
 		printf("%s\n", 准驾车型及代号2string(rand() % 2).c_str());
 	}
 
-	void learn_申请机动车驾驶证年龄条件()
-	{
+	void learn_申请机动车驾驶证年龄条件() {
 		do_test(all题目[申请机动车驾驶证年龄条件题目::type_id]);
 	}
 
-	void learn_载人超载扣分规则()
-	{
+	void learn_载人超载扣分规则() {
 		do_test(all题目[载人超载扣分::超载人扣分规则题目::type_id]);
 	}
 
-	void learn_超速扣分规则()
-	{
+	void learn_超速扣分规则() {
 		do_test(all题目[超速扣分::超速扣分规则题目::type_id]);
 	}
 
@@ -220,19 +216,30 @@ protected:
 		//size_t total_ans_times = 0;
 		//size_t total_incorrect_times = 0;
 
-		std::map<std::pair<int, int>, double> ids;
+		struct item {
+			double ratio;
+			int type_id;
+			int id;
+		};
+
+		std::list<item> ids;
 		for (const auto& i : all题目) {
 			for (const auto& j : i.second) {
 				if (j.second->stat.total_incorrect_times > 0) {
 					double ratio = j.second->stat.total_incorrect_times * 100.0 / (j.second->stat.total_correct_times + j.second->stat.total_incorrect_times);
 					if (ids.empty()) {
-						ids[std::make_pair<>(i.first, j.first)] = ratio;
+						ids.emplace_back(item({ ratio, i.first, j.first }));
 					} else {
+						bool inserted = false;
 						for (auto begin = ids.begin(); begin != ids.end(); begin++) {
-							if (begin->second < ratio) {
-								ids.insert(begin, std::make_pair<>(std::make_pair<>(i.first, j.first), ratio));
+							if (begin->ratio < ratio) {
+								ids.insert(begin, item({ ratio, i.first, j.first }));
+								inserted = true;
 								break;
 							}
+						}
+						if (!inserted) {
+							ids.emplace_back(item({ ratio, i.first, j.first }));
 						}
 					}
 				}
@@ -245,8 +252,8 @@ protected:
 		} else {
 			printf("一共答错过%u道题，错题按照错误率排序为：\n", ids.size());
 			for (const auto& i : ids) {
-				const auto& q = all题目[i.first.first][i.first.second];
-				printf("错误率%2.2f，题目：%s\n正确答案为：%s\n\n", i.second, q->question().c_str(), q->answer().c_str());
+				const auto& q = all题目[i.type_id][i.id];
+				printf("错误率%2.2f%%，题目：%s\n正确答案为：%s\n\n", i.ratio, q->question().c_str(), q->answer().c_str());
 			}
 		}
 	}
@@ -267,8 +274,7 @@ protected:
 	}
 
 public:
-	void run()
-	{
+	void run() {
 		struct 学习项目 {
 			std::string name;
 			std::function<void(驾考*)> func;
