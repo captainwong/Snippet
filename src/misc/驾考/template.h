@@ -36,22 +36,24 @@ struct 题目base {
 	virtual void print_question() const { printf("%s\n", question().c_str()); }
 	virtual void print_options() const {}
 	virtual void print_answer() const { printf("%s\n", answer().c_str()); }
-	virtual void check_answer(int ans) {
+	virtual bool check_answer(int ans) {
 		if (is_ans_correct(ans)) {
 			printf(GREEN("回答正确！\n"));
 			answer_correct = true;
 			stat.total_correct_times++;
+			return true;
 		} else {
 			printf(RED("答案错误，正确答案为：%s\n"), answer().c_str());
 			incorrect_times++;
 			stat.total_incorrect_times++;
+			return false;
 		}
 	}
 
 	virtual bool write(FILE* f) const {
-#define write_elment(elem) if (fwrite(&(elem), 1, sizeof((elem)), f) != sizeof((elem))) { fclose(f); f=NULL; return false; }
-		write_elment(id);
-		write_elment(stat);
+#define write_element(elem) if (fwrite(&(elem), 1, sizeof((elem)), f) != sizeof((elem))) { fclose(f); f=NULL; return false; }
+		write_element(id);
+		write_element(stat);
 		return true;
 	}
 
@@ -79,7 +81,7 @@ int get_备选题目(const std::map<int, 题目basePtr>& 题目列表) {
 	}
 };
 
-bool should_insert(const std::map<int, 题目basePtr>& 备选题目, int i, int  j) {
+bool should_insert(const std::map<int, 题目basePtr>& 备选题目, int j, int  i) {
 	auto ii = 备选题目.find(i);
 	auto jj = 备选题目.find(j);
 	if (ii == 备选题目.end() || jj == 备选题目.end()) { printf("kill me"); return false; }
@@ -135,6 +137,10 @@ void clear_ratio(std::map<int, 题目basePtr>& 备选题目) {
 }
 
 void do_test(std::map<int, 题目basePtr>& 题目列表) {
+	printf("一共%u道题，咱们撸起袖子加油干！\n", 题目列表.size());
+	system("pause");
+
+	size_t times = 1;
 	while (1) {
 		system("cls");
 
@@ -144,13 +150,15 @@ void do_test(std::map<int, 题目basePtr>& 题目列表) {
 			clear_ratio(题目列表);
 			break;
 		}
-
+		printf("[%u/%u] ", times, 题目列表.size());
 		auto& 题目 = 题目列表[i];
 		题目->print_question();
 		题目->print_options();
 
 		scanf("%d", &i);
-		题目->check_answer(i);
+		if (题目->check_answer(i)) {
+			times++;
+		}
 
 		system("pause");
 	}

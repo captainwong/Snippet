@@ -39,6 +39,9 @@ class 驾考 : jlib::noncopyable {
 protected:
 	static constexpr auto path = "驾考.dat";
 	std::unordered_map<int, std::map<int, 题目basePtr>> all题目{};
+	double target_ratio = 0.1; // 错题练习时，错误率低于ratio则不再练习
+	static constexpr double min_ratio = 0.001;
+	static constexpr double max_ratio = 0.5;
 
 	题目basePtr create题目(int type_id) {
 		switch (type_id) {
@@ -58,11 +61,12 @@ protected:
 		return count;
 	}
 
-	std::unordered_map<int, std::map<int, 题目basePtr>> load() {
-		std::unordered_map<int, std::map<int, 题目basePtr>> ps;
+	bool load(std::unordered_map<int, std::map<int, 题目basePtr>>& ps) {
 		FILE* f = fopen(path, "rb");
 		do {
+			ps.clear();
 			if (!f) { break; }
+			read_element(target_ratio);
 			int count = 0;
 			if (fread(&count, 1, sizeof(count), f) != sizeof(count)) {
 				break;
@@ -82,21 +86,23 @@ protected:
 			if (failed) break;
 
 			fclose(f);
-			return ps;
+			return true;
 		} while (0);
 		if (f) { fclose(f); }
-		return std::unordered_map<int, std::map<int, 题目basePtr>>();
+		ps.clear();
+		return false;
 	}
 
 	bool save(const std::unordered_map<int, std::map<int, 题目basePtr>>& ps) {
 		FILE* f = fopen(path, "wb");
 		do {
 			if (!f) { break; }
+			write_element(target_ratio);
 			size_t sz = count题目(ps);
-			write_elment(sz);
+			write_element(sz);
 			for (const auto& i : ps) {
 				for (const auto& j : i.second) {
-					write_elment(i.first);
+					write_element(i.first);
 					if (!j.second->write(f)) break;
 				}
 			}
@@ -212,6 +218,57 @@ protected:
 		do_test(all题目[其他扣分::其他扣分题目::type_id]);
 	}
 
+	void join(std::map<int, 题目basePtr>& origin, const std::map<int, 题目basePtr>& other) {
+		for (const auto& i : other) {
+			auto iter = origin.find(i.first);
+			if (iter == origin.end()) {
+				origin[i.first] = i.second;
+			} else {
+				bool inserted = false;
+				for (int j = 0; j < INT_MAX; j++) {
+					iter = origin.find(j);
+					if (iter == origin.end()) {
+						origin[j] = i.second;
+						inserted = true;
+						break;
+					}
+				}
+				if (!inserted) {
+					printf("kill me %s:%d\n", __FILE__, __LINE__);
+					exit(1);
+				}
+			}
+		}
+	}
+
+	void learn_所有扣分规则() {
+		auto qs = all题目[载人超载扣分::超载人扣分规则题目::type_id];
+		join(qs, all题目[超速扣分::超速扣分规则题目::type_id]);
+		join(qs, all题目[其他扣分::其他扣分题目::type_id]);
+		do_test(qs);
+	}
+
+	void learn_错题练习() {
+
+	}
+
+	void learn_调整目标错误率() {
+		system("cls");
+		printf("当前目标错误率为%2.2f%%，错误率低于此值则练习错题时不再出现。\n", target_ratio * 100.0);
+		double ratio = 0.0;
+		printf("请输入新的目标错误率：");
+		scanf("%lf", &ratio);
+		if (ratio / 100.0 < min_ratio || ratio / 100.0 > max_ratio) {
+			printf(RED("错误率应当处于 %.2lf%% ~ %.2lf%% 之间。\n"), min_ratio * 100.0, max_ratio * 100.0);
+			system("pause");
+			return;
+		}
+
+		target_ratio = ratio;
+		printf(GREEN("已将目标错误率修改为 %2.2lf！"), target_ratio);
+		system("pause");
+	}
+
 	void learn_查看统计信息() {
 		//size_t total_ans_times = 0;
 		//size_t total_incorrect_times = 0;
@@ -288,6 +345,9 @@ public:
 		append(learn_载人超载扣分规则);
 		append(learn_超速扣分规则);
 		append(learn_其他扣分规则);
+		append(learn_所有扣分规则);
+		append(learn_错题练习);
+		append(learn_调整目标错误率);
 		append(learn_查看统计信息);
 		append(learn_清空统计信息);
 
@@ -299,7 +359,8 @@ public:
 		all题目 = getAll题目();
 
 		// 读取统计信息
-		auto fs = load();
+		std::unordered_map<int, std::map<int, 题目basePtr>> fs;
+		load(fs);
 		for (const auto& i : fs) {
 			for (const auto& j : i.second) {
 				all题目[i.first][j.first]->stat = j.second->stat;
@@ -315,10 +376,14 @@ public:
 					const auto& 项目 = 学习项目[i];
 					printf("  %d：%s\n", i + 1, 项目.name.c_str());
 				}
+				printf("  %u: 退出\n", 学习项目.size() + 1);
 				printf("请选择要学习的项目：");
 				scanf("%d", &n);
-			} while (n < 1 || n >(int)学习项目.size());
+			} while (n < 1 || n > (int)学习项目.size() + 1);
 
+			if (n == (int)学习项目.size() + 1) {
+				break;
+			}
 			学习项目[n - 1].func(this);
 
 			printf("是否继续学习？按1继续，其他按键退出\n");

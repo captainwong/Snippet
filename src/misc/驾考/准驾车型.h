@@ -219,7 +219,7 @@ struct 申请机动车驾驶证年龄条件题目 : 题目base {
 
 	virtual bool write(FILE* f) const override {
 		if (!__super::write(f)) return false;
-		write_elment(车型id);
+		write_element(车型id);
 		return true;
 	}
 };
