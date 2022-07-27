@@ -14,6 +14,16 @@
 struct Stat {
 	size_t total_correct_times = 0;
 	size_t total_incorrect_times = 0;
+
+	double ratio() const {
+		size_t total = total_correct_times + total_incorrect_times;
+		if (total > 0) {
+			return total_incorrect_times * 1.0 / total;
+		} else {
+			return 0;
+		}
+	}
+
 	void clear() {
 		memset(this, 0, sizeof(*this));
 	}

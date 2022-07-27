@@ -241,6 +241,16 @@ protected:
 		}
 	}
 
+	std::map<int, 题目basePtr> filter(const std::map<int, 题目basePtr>& origin) {
+		std::map<int, 题目basePtr> dst;
+		for (const auto& i : origin) {
+			if (i.second->stat.ratio() >= target_ratio) {
+				dst[i.first] = i.second;
+			}
+		}
+		return dst;
+	}
+
 	void learn_所有扣分规则() {
 		auto qs = all题目[载人超载扣分::超载人扣分规则题目::type_id];
 		join(qs, all题目[超速扣分::超速扣分规则题目::type_id]);
@@ -249,7 +259,15 @@ protected:
 	}
 
 	void learn_错题练习() {
-
+		auto qs = filter(all题目[申请机动车驾驶证年龄条件题目::type_id]);
+		join(qs, filter(all题目[载人超载扣分::超载人扣分规则题目::type_id]));
+		join(qs, filter(all题目[超速扣分::超速扣分规则题目::type_id]));
+		join(qs, filter(all题目[其他扣分::其他扣分题目::type_id]));
+		if (qs.empty()) {
+			printf("错题记录为空！\n");
+			return;
+		}
+		do_test(qs);
 	}
 
 	void learn_调整目标错误率() {
@@ -283,7 +301,7 @@ protected:
 		for (const auto& i : all题目) {
 			for (const auto& j : i.second) {
 				if (j.second->stat.total_incorrect_times > 0) {
-					double ratio = j.second->stat.total_incorrect_times * 100.0 / (j.second->stat.total_correct_times + j.second->stat.total_incorrect_times);
+					double ratio = j.second->stat.ratio();
 					if (ids.empty()) {
 						ids.emplace_back(item({ ratio, i.first, j.first }));
 					} else {
@@ -310,7 +328,7 @@ protected:
 			printf("一共答错过%u道题，错题按照错误率排序为：\n", ids.size());
 			for (const auto& i : ids) {
 				const auto& q = all题目[i.type_id][i.id];
-				printf("错误率%2.2f%%，题目：%s\n正确答案为：%s\n\n", i.ratio, q->question().c_str(), q->answer().c_str());
+				printf("错误率%2.2f%%，题目：%s\n正确答案为：%s\n\n", i.ratio * 100.0, q->question().c_str(), q->answer().c_str());
 			}
 		}
 	}
