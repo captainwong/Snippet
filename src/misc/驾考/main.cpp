@@ -44,7 +44,7 @@ class 驾考 : jlib::noncopyable {
 protected:
 	static constexpr auto path = "驾考.dat";
 	std::unordered_map<int, std::map<int, 题目basePtr>> all题目{};
-	double target_ratio = 0.1; // 错题练习时，错误率低于ratio则不再练习
+	double target_ratio = 0.15; // 错题练习时，错误率低于ratio则不再练习
 	static constexpr double min_ratio = 0.001;
 	static constexpr double max_ratio = 0.5;
 
@@ -333,7 +333,8 @@ protected:
 		}
 
 		target_ratio = ratio;
-		printf(GREEN("已将目标错误率修改为 %2.2lf！"), target_ratio);
+		printf(GREEN("已将目标错误率修改为 %2.2lf%%！\n"), target_ratio);
+		target_ratio /= 100.0;
 		system("pause");
 	}
 
