@@ -13,10 +13,20 @@
 #include "扣分.h"
 
 
-constexpr bool all_type_id_mutual_exclusive(std::initializer_list<int> id) {
-	auto begin = id.begin();
-	for (size_t i = 0; i < id.size(); i++) {
-		for (size_t j = i + 1; j < id.size(); j++) {
+static constexpr int all_type_ids[] = {
+	申请机动车驾驶证年龄条件题目::type_id,
+	载人超载扣分题目::type_id,
+	载货超载扣分题目::type_id,
+	超速扣分::超速扣分规则题目::type_id,
+	高速相关扣分题目::type_id,
+	危险品运输相关扣分题目::type_id,
+	其他扣分题目::type_id,
+};
+
+static constexpr bool all_type_id_mutual_exclusive(const int* ids, const size_t len) {
+	auto begin = ids;
+	for (size_t i = 0; i < len; i++) {
+		for (size_t j = i + 1; j < len; j++) {
 			if (*(begin + i) == *(begin + j)) {
 				return false;
 			}
@@ -26,12 +36,7 @@ constexpr bool all_type_id_mutual_exclusive(std::initializer_list<int> id) {
 }
 
 static_assert(
-	all_type_id_mutual_exclusive({ 
-		申请机动车驾驶证年龄条件题目::type_id,
-		载人超载扣分::超载人扣分规则题目::type_id,
-		超速扣分::超速扣分规则题目::type_id,
-		其他扣分::其他扣分题目::type_id,
-	}), "有typeid雷同，查一下行号"
+	all_type_id_mutual_exclusive(all_type_ids, sizeof(all_type_ids) / sizeof(all_type_ids[0])), "有typeid雷同，查一下行号"
 );
 
 
@@ -46,9 +51,12 @@ protected:
 	题目basePtr create题目(int type_id) {
 		switch (type_id) {
 		case 申请机动车驾驶证年龄条件题目::type_id: return std::make_shared<申请机动车驾驶证年龄条件题目>();
-		case 载人超载扣分::超载人扣分规则题目::type_id:return std::make_shared<载人超载扣分::超载人扣分规则题目>();
+		case 载人超载扣分题目::type_id:return std::make_shared<载人超载扣分题目>();
+		case 载货超载扣分题目::type_id:return std::make_shared<载货超载扣分题目>();
 		case 超速扣分::超速扣分规则题目::type_id:return std::make_shared<超速扣分::超速扣分规则题目>();
-		case 其他扣分::其他扣分题目::type_id:return std::make_shared<其他扣分::其他扣分题目>();
+		case 高速相关扣分题目::type_id:return std::make_shared<高速相关扣分题目>();
+		case 危险品运输相关扣分题目::type_id:return std::make_shared<危险品运输相关扣分题目>();
+		case 其他扣分题目::type_id:return std::make_shared<其他扣分题目>();
 		default: return nullptr;
 		}
 	}
@@ -115,6 +123,30 @@ protected:
 	std::unordered_map<int, std::map<int, 题目basePtr>> getAll题目() {
 		std::unordered_map<int, std::map<int, 题目basePtr>> map;
 
+		/*{
+			int baseline = 0;
+			for (const auto& i : g_其他扣分规则) {
+				if (i.描述 == NULL) {
+					baseline = i.id;
+				} else {
+					map[其他扣分题目::type_id][i.id - baseline] =
+						(std::make_shared<其他扣分题目>(其他扣分题目{ i.id - baseline, i.描述, i.扣分 }));
+				}
+			}
+		}*/
+#define LOAD_其他扣分(项目) \
+{ \
+	int baseline = 0; \
+	for (const auto& i : g_##项目##规则) { \
+		if (i.描述 == NULL) { \
+		baseline = i.id; \
+		} else { \
+			map[项目##题目::type_id][i.id - baseline] = \
+				(std::make_shared<项目##题目>(项目##题目{ i.id - baseline, i.描述, i.扣分 })); \
+		} \
+	} \
+}
+
 		{
 			int baseline = 0;
 			int count = 0;
@@ -139,23 +171,34 @@ protected:
 		}
 
 		{
-			using namespace 载人超载扣分;
 			int baseline = 0;
 			int count = 0;
-			for (const auto& i : g_超载人扣分规则) {
+			for (const auto& i : g_载人超载扣分规则) {
 				if ((int)i.车型.size() > count) {
 					count = (int)i.车型.size();
 				}
 			}
-			for (const auto& i : g_超载人扣分规则) {
+			for (const auto& i : g_载人超载扣分规则) {
 				if (i.车型.empty()) {
 					baseline = i.id;
 				} else {
 					for (const auto& j : i.车型) {
 						int id = (i.id - baseline) * count + j;
-						map[超载人扣分规则题目::type_id][id] =
-							(std::make_shared<超载人扣分规则题目>(超载人扣分规则题目{ id, j, i.范围, i.扣分 }));
+						map[载人超载扣分题目::type_id][id] =
+							(std::make_shared<载人超载扣分题目>(载人超载扣分题目{ id, j, i.范围, i.扣分 }));
 					}
+				}
+			}
+		}
+
+		{
+			int baseline = 0;
+			for (const auto& i : g_载货超载扣分规则) {
+				if (i.描述 == NULL) {
+					baseline = i.id;
+				} else {
+					map[载货超载扣分题目::type_id][i.id - baseline] =
+						(std::make_shared<载货超载扣分题目>(载货超载扣分题目{ i.id - baseline, i.描述, i.扣分 }));
 				}
 			}
 		}
@@ -182,18 +225,10 @@ protected:
 			}
 		}
 
-		{
-			using namespace 其他扣分;
-			int baseline = 0;
-			for (const auto& i : g_其他扣分规则) {
-				if (i.描述 == NULL) {
-					baseline = i.id;
-				} else {
-					map[其他扣分题目::type_id][i.id - baseline] =
-						(std::make_shared<其他扣分题目>(其他扣分题目{ i.id - baseline, i.描述, i.扣分 }));
-				}
-			}
-		}
+		LOAD_其他扣分(高速相关扣分);
+		LOAD_其他扣分(危险品运输相关扣分);
+		LOAD_其他扣分(其他扣分);
+		
 
 		return map;
 	}
@@ -207,15 +242,27 @@ protected:
 	}
 
 	void learn_载人超载扣分规则() {
-		do_test(all题目[载人超载扣分::超载人扣分规则题目::type_id]);
+		do_test(all题目[载人超载扣分题目::type_id]);
+	}
+
+	void learn_载货超载扣分规则() {
+		do_test(all题目[载货超载扣分题目::type_id]);
 	}
 
 	void learn_超速扣分规则() {
 		do_test(all题目[超速扣分::超速扣分规则题目::type_id]);
 	}
 
+	void learn_高速相关扣分规则() {
+		do_test(all题目[高速相关扣分题目::type_id]);
+	}
+
+	void learn_危险品运输相关扣分规则() {
+		do_test(all题目[危险品运输相关扣分题目::type_id]);
+	}
+
 	void learn_其他扣分规则() {
-		do_test(all题目[其他扣分::其他扣分题目::type_id]);
+		do_test(all题目[其他扣分题目::type_id]);
 	}
 
 	void join(std::map<int, 题目basePtr>& origin, const std::map<int, 题目basePtr>& other) {
@@ -252,17 +299,20 @@ protected:
 	}
 
 	void learn_所有扣分规则() {
-		auto qs = all题目[载人超载扣分::超载人扣分规则题目::type_id];
-		join(qs, all题目[超速扣分::超速扣分规则题目::type_id]);
-		join(qs, all题目[其他扣分::其他扣分题目::type_id]);
+		std::map<int, 题目basePtr> qs;
+		for (auto type_id : all_type_ids) {
+			if (type_id != 申请机动车驾驶证年龄条件题目::type_id) {
+				join(qs, all题目[type_id]);
+			}
+		}
 		do_test(qs);
 	}
 
 	void learn_错题练习() {
-		auto qs = filter(all题目[申请机动车驾驶证年龄条件题目::type_id]);
-		join(qs, filter(all题目[载人超载扣分::超载人扣分规则题目::type_id]));
-		join(qs, filter(all题目[超速扣分::超速扣分规则题目::type_id]));
-		join(qs, filter(all题目[其他扣分::其他扣分题目::type_id]));
+		std::map<int, 题目basePtr> qs;
+		for (auto type_id : all_type_ids) {
+			join(qs, filter(all题目[type_id]));
+		}
 		if (qs.empty()) {
 			printf("错题记录为空！\n");
 			return;
@@ -288,6 +338,7 @@ protected:
 	}
 
 	void learn_查看统计信息() {
+		system("cls");
 		//size_t total_ans_times = 0;
 		//size_t total_incorrect_times = 0;
 
@@ -297,6 +348,7 @@ protected:
 			int id;
 		};
 
+		uint64_t total_correct_times = 0;
 		std::list<item> ids;
 		for (const auto& i : all题目) {
 			for (const auto& j : i.second) {
@@ -317,15 +369,18 @@ protected:
 							ids.emplace_back(item({ ratio, i.first, j.first }));
 						}
 					}
+				} else {
+					total_correct_times += j.second->stat.total_correct_times;
 				}
-
 			}
 		}
 
-		if (ids.empty()) {
+		if (total_correct_times == 0) {
 			printf("答题记录为空！\n");
+		} else if (ids.empty()) {
+			printf("恭喜你，一共答过%llu道题，一题不错，全部正确！\n", total_correct_times);
 		} else {
-			printf("一共答错过%u道题，错题按照错误率排序为：\n", ids.size());
+			printf("一共答对过%llu道题，答错过%u道题，错题按照错误率排序为：\n", total_correct_times, ids.size());
 			for (const auto& i : ids) {
 				const auto& q = all题目[i.type_id][i.id];
 				printf("错误率%2.2f%%，题目：%s\n正确答案为：%s\n\n", i.ratio * 100.0, q->question().c_str(), q->answer().c_str());
@@ -334,6 +389,7 @@ protected:
 	}
 
 	void learn_清空统计信息() {
+		system("cls");
 		int yes = 0;
 		printf(RED("确定要清空统计信息吗？此操作无法恢复！\n"));
 		printf("输入1继续，输入其他任意值取消：");
@@ -361,7 +417,10 @@ public:
 		append(learn_准驾车型及代号);
 		append(learn_申请机动车驾驶证年龄条件);
 		append(learn_载人超载扣分规则);
+		append(learn_载货超载扣分规则);
 		append(learn_超速扣分规则);
+		append(learn_高速相关扣分规则);
+		append(learn_危险品运输相关扣分规则);
 		append(learn_其他扣分规则);
 		append(learn_所有扣分规则);
 		append(learn_错题练习);
@@ -386,19 +445,20 @@ public:
 		}
 
 		while (1) {
-			int n = 0;
+			int n = 0, sr = 0;
 			do {
 				system("cls");
 				printf("当前可以选择的项目有：\n");
 				for (size_t i = 0; i < 学习项目.size(); i++) {
 					const auto& 项目 = 学习项目[i];
-					printf("  %d：%s\n", i + 1, 项目.name.c_str());
+					printf("  %2d：%s\n", i + 1, 项目.name.c_str());
 				}
-				printf("  %u: 退出\n", 学习项目.size() + 1);
+				printf("  %2u: 退出\n", 学习项目.size() + 1);
 				printf("请选择要学习的项目：");
-				scanf("%d", &n);
+				sr = scanf("%d", &n);
+				if (sr == 0) { break; }
 			} while (n < 1 || n > (int)学习项目.size() + 1);
-
+			if (sr == 0) { break; }
 			if (n == (int)学习项目.size() + 1) {
 				break;
 			}
