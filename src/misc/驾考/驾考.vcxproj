@@ -145,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="准驾车型.h" />
+    <ClInclude Include="处罚.h" />
     <ClInclude Include="扣分.h" />
     <ClInclude Include="template.h" />
   </ItemGroup>

@@ -29,5 +29,8 @@
     <ClInclude Include="扣分.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="处罚.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
