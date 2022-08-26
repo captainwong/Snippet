@@ -206,14 +206,13 @@ static int daysSinceEpoch(int y, int m, int d) {
 
 // 获取公历日期是当年的第几天
 static int getYDay(int year, int m, int d) {
-	int yday = 0;
+	int yday = d;
 	for (int i = 0; i < m - 1; i++) {
 		yday += days_of_month[i];
 		if (i == 1 && is_leap_year(year)) {
 			yday++;
 		}
 	}
-	yday += d;
 	return yday;
 }
 

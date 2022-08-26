@@ -477,7 +477,6 @@ public:
 	}
 };
 
-
 int main()
 {
 	// https://www.codeproject.com/Tips/5255355/How-to-Put-Color-on-Windows-Console
