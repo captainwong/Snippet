@@ -5,39 +5,21 @@
     <ClCompile Include="queens_ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_queens_ui.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_queens_ui.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_queens_ui.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ChessBoardView.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ChessBoardView.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
+    
+    
+    
+    
+    
     <ClCompile Include="ChessBoardView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ControlPanelView.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ControlPanelView.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
+    
+    
     <ClCompile Include="ControlPanelView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_View.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_View.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
+    
+    
     <ClCompile Include="View.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -70,41 +52,35 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="queens_ui.h">
+    <QtMoc Include="queens_ui.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="queens_ui.ui">
+    </QtMoc>
+    <QtUic Include="queens_ui.ui">
       <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="queens_ui.qrc">
+    </QtUic>
+    <QtRcc Include="queens_ui.qrc">
       <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="ChessBoardView.h">
+    </QtRcc>
+    <QtMoc Include="ChessBoardView.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="ChessBoardView.ui">
+    </QtMoc>
+    <QtUic Include="ChessBoardView.ui">
       <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="ControlPanelView.h">
+    </QtUic>
+    <QtMoc Include="ControlPanelView.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="ControlPanelView.ui">
+    </QtMoc>
+    <QtUic Include="ControlPanelView.ui">
       <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="View.h">
+    </QtUic>
+    <QtMoc Include="View.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_queens_ui.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_ChessBoardView.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_ControlPanelView.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
+    
+    
+    
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="8queens_ui.rc" />

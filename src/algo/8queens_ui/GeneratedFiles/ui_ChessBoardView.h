@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ChessBoardView.ui'
 **
-** Created by: Qt User Interface Compiler version 5.10.1
+** Created by: Qt User Interface Compiler version 5.9.8
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -35,7 +35,7 @@ public:
 
     void retranslateUi(QWidget *ChessBoardView)
     {
-        ChessBoardView->setWindowTitle(QApplication::translate("ChessBoardView", "ChessBoardView", nullptr));
+        ChessBoardView->setWindowTitle(QApplication::translate("ChessBoardView", "ChessBoardView", Q_NULLPTR));
     } // retranslateUi
 
 };
